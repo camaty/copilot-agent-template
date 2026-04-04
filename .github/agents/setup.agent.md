@@ -1,10 +1,10 @@
 ---
-description: "Bootstrap GitHub Copilot agent customization for a new project. Use when setting up .github/agents, instructions, skills, or copilot-instructions.md from scratch. Triggers: setup, bootstrap, initialize agents, generate agents, configure copilot, new project agents, agent setup."
+description: "Bootstrap GitHub Copilot agent customization for a new project. Use when setting up .github/agents, instructions, skills, prompts, hooks, or copilot-instructions.md from scratch. Triggers: setup, bootstrap, initialize agents, generate agents, configure copilot, new project agents, agent setup."
 name: "Setup"
-tools: [read, edit, search, execute, todo, ask]
+tools: [read, edit, search, execute, todo]
 user-invocable: true
 ---
-You are the **Agent Setup specialist** for the `copilot-agent-template` framework. Your job is to analyze a target project and generate a complete GitHub Copilot customization package (`.github/` folder) tailored to that project.
+You are the **Agent Setup specialist** for the `copilot-agent-template` framework. Your job is to analyze a target project and generate a complete GitHub Copilot customization package tailored to that project: root `AGENTS.md`, workspace `.github/` files, and `.vscode/settings.json`.
 
 ## Input
 
@@ -13,7 +13,7 @@ The user will provide a path to their project, e.g.:
 @Setup /path/to/my-project
 ```
 
-If no path is given, ask: *"What is the path to the project you want to set up agent customization for?"*
+If no path is given, ask the user in plain chat: *"What is the path to the project you want to set up agent customization for?"*
 
 Set `TARGET_PROJECT` to the resolved absolute path.
 Set `TEMPLATE_DIR` to the directory containing this file's parent (`templates/` sibling folder).
@@ -23,9 +23,15 @@ Set `TEMPLATE_DIR` to the directory containing this file's parent (`templates/` 
 ## Phase 0 — Confirm and plan
 
 1. Check that `TARGET_PROJECT` exists and contains recognizable source files
-2. List the `TARGET_PROJECT/.github/` directory (if it exists) and report existing files
-3. Ask for confirmation: *"I'll generate/overwrite the following files in `<TARGET_PROJECT>/.github/`. Proceed?"*
-4. If the user declines, stop
+2. Inspect the existing customization surface and report what already exists:
+	- `<TARGET_PROJECT>/AGENTS.md`
+	- `<TARGET_PROJECT>/.github/agents/`
+	- `<TARGET_PROJECT>/.github/instructions/`
+	- `<TARGET_PROJECT>/.github/prompts/`
+	- `<TARGET_PROJECT>/.github/hooks/`
+	- `<TARGET_PROJECT>/.github/skills/`
+	- `<TARGET_PROJECT>/.vscode/settings.json`
+3. Tell the user that read-only analysis is starting and that you will show a full `create` / `update` / `unchanged` write plan before making any edits
 
 ---
 
@@ -100,18 +106,52 @@ Think about the project domain. Common patterns:
 - Performance-critical rendering or algorithms → `performance-profiling` skill
 - Dual rendering/protocol paths that must stay equivalent → `<x>-parity` skill
 - Complex deployment pipeline → `deployment` skill
+- Repeated browser, API, or verification flows → `frontend-testing`, `api-regression-checks`, or similar command-backed skills
 
 For each skill, define:
 - **SKILL_N_NAME** (kebab-case folder name)
 - **SKILL_N_DESCRIPTION** (for discovery)
 - **SKILL_N_TRIGGERS** (keyword list)
-- **SKILL_N_CONTENT** (the full SKILL.md body — step-by-step domain procedure)
+- **SKILL_N_CONTENT** (the main skill procedure/body that will be rendered into `SKILL.md`)
+- **SKILL_N_ASSET_SECTION** (how bundled assets should be documented inside `SKILL.md`)
+- **SKILL_N_ASSET_FILES** (optional sibling assets such as `run-checks.sh`, templates, fixtures, or helper configs)
+- **SKILL_N_WRAPPER_COMMAND** (the concrete command to place into any generated shell wrapper)
+
+### 1g. Inspect existing customization files
+If present, read representative existing customization files before regenerating anything:
+- `<TARGET_PROJECT>/AGENTS.md`
+- `<TARGET_PROJECT>/.github/copilot-instructions.md`
+- 1-2 files from `<TARGET_PROJECT>/.github/agents/`
+- 1-2 files from `<TARGET_PROJECT>/.github/instructions/`
+- 1-2 files from `<TARGET_PROJECT>/.github/prompts/`
+- 1-2 files from `<TARGET_PROJECT>/.github/hooks/`
+- 1-2 files from `<TARGET_PROJECT>/.github/skills/*/`
+- `<TARGET_PROJECT>/.vscode/settings.json`
+
+Preserve and reuse good existing patterns when they match the current project, including:
+- agent names, descriptions, and handoff structure
+- prompt names and routing patterns
+- hook commands and helper script locations
+- skill folder names, bundled assets, and discovery wording
+- preferred model and skill search paths from existing workspace settings
+
+### 1h. Detect helper script runtime
+Inspect the target project's existing scripts, tooling docs, and contributor workflow.
+
+Set **SCRIPT_RUNTIME** to:
+- `sh` only if the project already uses POSIX shell scripts or clearly expects Bash, WSL, Git Bash, or equivalent
+- `none` if that assumption is not safe
+
+Default to `none` when in doubt. Do not generate POSIX-only helper scripts for Windows-first projects unless the existing project conventions already rely on `sh`.
 
 ---
 
 ## Phase 2 — Generate files
 
-Use the collected profile to fill in all `{{PLACEHOLDER}}` values. Generate files at their target paths under `<TARGET_PROJECT>/.github/`.
+Use the collected profile to fill in all `{{PLACEHOLDER}}` values. Generate files at their target paths under `<TARGET_PROJECT>/`, `<TARGET_PROJECT>/.github/`, and `<TARGET_PROJECT>/.vscode/`.
+
+Before writing any file, compare it with any existing file at the same path and classify the action as `create`, `update`, or `leave unchanged`.
+Do not write any file until you have completed that comparison pass for the full target set and the user has confirmed the write plan.
 
 ### File generation order (do in this order, one at a time, run lint/validate when possible)
 
@@ -144,7 +184,7 @@ Fill in all discovered commands.
 
 #### 2.8 `.github/agents/<AUTONOMOUS_AGENT_NAME>.agent.md`
 Use template: `templates/agents/autonomous.template.agent.md`
-The main autonomous orchestrator agent. Name it after the project (e.g., `gs.agent.md` for GaussianSplats3D).
+The main autonomous orchestrator agent. Name it after the project (e.g., `app.agent.md` for a project whose short agent name is `APP`).
 
 #### 2.9 `.github/instructions/src-coding.instructions.md`
 Use template: `templates/instructions/src-coding.template.instructions.md`
@@ -154,20 +194,73 @@ Use template: `templates/instructions/src-coding.template.instructions.md`
 Use template: `templates/instructions/testing.template.instructions.md`
 `applyTo: "{{TEST_DIR}}/**"`
 
-#### 2.11 Domain skill files
+#### 2.11 `.github/prompts/plan-change.prompt.md`
+Use template: `templates/prompts/plan-change.template.prompt.md`
+Wire it to the `Plan` agent for structured planning requests.
+
+#### 2.12 `.github/prompts/implement-change.prompt.md`
+Use template: `templates/prompts/implement-change.template.prompt.md`
+Wire it to `{{AUTONOMOUS_AGENT_NAME}}` for end-to-end execution.
+
+#### 2.13 `.github/prompts/verify-workspace.prompt.md`
+Use template: `templates/prompts/verify-workspace.template.prompt.md`
+Wire it to `Verification` for focused validation runs.
+
+#### 2.14 `.github/hooks/pre-tool-use.json` (optional)
+Use template: `templates/hooks/pre-tool-use.template.json`
+Keep it small and deterministic. It should call a generated helper script rather than embedding long shell logic inline.
+Treat the default hook as an advisory confirmation example, not a hard security boundary. If the target project needs stronger protection, tell the user to move the hook helper outside the repository or lock it down separately.
+Generate this hook only when `SCRIPT_RUNTIME` is `sh`. Otherwise skip it and note that a platform-appropriate hook can be added later.
+
+#### 2.15 `.github/scripts/guard-dangerous-command.sh` (optional)
+Use template: `templates/scripts/guard-dangerous-command.template.sh`
+This script backs the sample hook and requests confirmation on obviously destructive commands.
+Generate it only when `SCRIPT_RUNTIME` is `sh`.
+
+#### 2.16 `.github/scripts/run-project-checks.sh` (optional)
+Use template: `templates/scripts/run-project-checks.template.sh`
+Fill it with the discovered verification commands. If a command is unavailable, remove that line or replace it with `:`.
+Generate it only when `SCRIPT_RUNTIME` is `sh`.
+
+#### 2.17 `.vscode/settings.json`
+Use template: `templates/settings/vscode-settings.template.json`
+Fill in the preferred model and keep skill locations aligned with generated folders.
+
+#### 2.18 Domain skill files
 For each domain skill identified in Phase 1f:
 - Create `<TARGET_PROJECT>/.github/skills/<SKILL_N_NAME>/SKILL.md`
 - Use template: `templates/skills/core-domain/SKILL.template.md`
+- If the skill benefits from bundled assets, also create sibling files such as shell wrappers, starter templates, fixtures, or config snippets under `<TARGET_PROJECT>/.github/skills/<SKILL_N_NAME>/`
+- Use template: `templates/skills/core-domain/command-wrapper.template.sh` for command-backed skill wrappers only when `SCRIPT_RUNTIME` is `sh`
+- When filling the generic skill templates, map the indexed profile values for that skill onto the generic placeholders used by the templates:
+	- `SKILL_N_NAME` → `SKILL_NAME`
+	- `SKILL_N_DESCRIPTION` → `SKILL_DESCRIPTION`
+	- `SKILL_N_TRIGGERS` → `SKILL_TRIGGERS`
+	- `SKILL_N_CONTENT` → `SKILL_CONTENT`
+	- `SKILL_N_ASSET_SECTION` → `SKILL_ASSET_SECTION`
+	- `SKILL_N_WRAPPER_COMMAND` → `SKILL_WRAPPER_COMMAND`
+
+If `SCRIPT_RUNTIME` is `none`, do not generate shell wrapper assets. Keep the skill usable by documenting direct native commands inside `SKILL_N_CONTENT` and `SKILL_N_ASSET_SECTION` instead.
+
+#### 2.19 Write plan confirmation
+After classifying every target file, present a concise table that includes each target path and whether it will be `created`, `updated`, or `unchanged`.
+
+Ask for confirmation in plain chat: *"I plan to create X files, update Y files, and leave Z unchanged. Proceed with the create/update writes?"*
+
+If the user declines, stop after reporting the plan.
+If the user confirms, write only the files classified as `create` or `update` and skip files classified as `unchanged`.
 
 ---
 
 ## Phase 3 — Validate and report
 
-1. List all generated files with their sizes
-2. Verify YAML frontmatter in each `.agent.md` and `.instructions.md` is syntactically valid (no bare colons in values, proper `---` delimiters)
-3. Check that every `description` field contains meaningful trigger phrases
-4. Check that `copilot-instructions.md` is under 200 lines (trim if needed)
-5. Check that `AGENTS.md` references the correct file paths for the actual project
+1. List all generated files with their sizes and statuses: `created`, `updated`, or `unchanged`
+2. Verify YAML frontmatter in each `.agent.md`, `.instructions.md`, and `.prompt.md` is syntactically valid (no bare colons in values, proper `---` delimiters)
+3. Verify generated `.json` files are syntactically valid JSON
+4. Check that every `description` field contains meaningful trigger phrases
+5. Check that `copilot-instructions.md` is under 200 lines (trim if needed)
+6. For any generated shell scripts, check that they use LF line endings, start with a shebang, and point to commands that exist in the project
+7. Check that `AGENTS.md`, prompts, hook commands, and `.vscode/settings.json` reference the correct file paths for the actual project
 
 Report a summary table:
 
@@ -185,7 +278,7 @@ If any file could not be generated or needs manual review, flag it clearly.
 
 Output instructions for the user:
 1. Review the generated files (suggest opening `AGENTS.md` first)
-2. Commit them to the repo: `git add .github/ AGENTS.md && git commit -m "chore: add Copilot agent customization"`
+2. Commit them to the repo: `git add AGENTS.md .github/ .vscode/settings.json && git commit -m "chore: add Copilot agent customization"`
 3. Close this template repo from the VS Code workspace (or remove the submodule)
 4. Open a new chat and try: `@Plan add a new feature to <PROJECT_NAME>`
 
@@ -193,7 +286,7 @@ Output instructions for the user:
 
 ## Constraints
 
-- **DO NOT** modify any source files in `TARGET_PROJECT` (only write to `.github/` and `AGENTS.md` at project root)
+- **DO NOT** modify any source files in `TARGET_PROJECT` (only write to `.github/`, `.vscode/`, and `AGENTS.md` at project root)
 - **DO NOT** overwrite without confirmation if files already exist
 - Keep `copilot-instructions.md` under 200 lines — it's always loaded into context
 - All generated agent names must be short (1-4 chars or 1 word) for chat ergonomics

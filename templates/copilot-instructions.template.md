@@ -19,4 +19,4 @@ applyTo: "**"
 ```
 
 ## Agents available
-Use `@Plan` to decompose tasks before writing code, `@Implementer` to execute an approved plan, `@Reviewer` to audit completed changes, `@Explore` to research the codebase read-only, and `@Verification` to run tests.
+Use `@Plan` to decompose tasks before writing code, follow handoffs through `Implementer` and `Reviewer`, use `@Explore` to research the codebase read-only, and use `@Verification` to run tests.

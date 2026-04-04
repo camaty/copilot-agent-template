@@ -1,0 +1,11 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "type": "command",
+        "command": "sh .github/scripts/guard-dangerous-command.sh",
+        "timeout": 10
+      }
+    ]
+  }
+}

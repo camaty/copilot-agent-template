@@ -1,27 +1,39 @@
 # copilot-agent-template
 
-A generalized VS Code GitHub Copilot agent customization kit. Given any project repository, the `@Setup` agent reads the codebase and generates a full `.github/` customization folder — agents, instructions, skills, and prompts — tailored to that project.
+A generalized VS Code GitHub Copilot agent customization kit. Given any project repository, the `@Setup` agent reads the codebase and generates a tailored customization package for that project: root `AGENTS.md`, workspace `.github/` files, and `.vscode/settings.json`.
 
 ## What it generates
 
 ```
-<your-project>/.github/
-├── copilot-instructions.md          # Always-on workspace instructions
+<your-project>/
 ├── AGENTS.md                        # Project constraints + file map
-├── agents/
-│   ├── <project>.agent.md           # Autonomous "do everything" agent
-│   ├── explore.agent.md             # Read-only exploration
-│   ├── plan.agent.md                # Task planning, outputs plan for approval
-│   ├── implementer.agent.md         # Executes an approved plan
-│   ├── reviewer.agent.md            # Security + quality auditor
-│   └── verification.agent.md        # Runs lint / build / tests
-├── instructions/
-│   ├── src-coding.instructions.md   # Code style, patterns, conventions
-│   └── testing.instructions.md      # Test pyramid + coverage targets
-├── skills/
-│   └── <domain>/SKILL.md            # Per-skill domain knowledge
-└── prompts/
-    └── <workflow>.prompt.md         # Reusable task prompts
+├── .vscode/
+│   └── settings.json                # Agent handoff + skill location settings
+└── .github/
+  ├── copilot-instructions.md      # Always-on workspace instructions
+  ├── agents/
+  │   ├── <project>.agent.md       # Autonomous "do everything" agent
+  │   ├── explore.agent.md         # Read-only exploration
+  │   ├── plan.agent.md            # Task planning, outputs plan for approval
+  │   ├── implementer.agent.md     # Executes an approved plan via handoff
+  │   ├── reviewer.agent.md        # Security + quality auditor
+  │   └── verification.agent.md    # Runs lint / build / tests
+  ├── instructions/
+  │   ├── src-coding.instructions.md
+  │   └── testing.instructions.md
+  ├── prompts/
+  │   ├── plan-change.prompt.md
+  │   ├── implement-change.prompt.md
+  │   └── verify-workspace.prompt.md
+  ├── hooks/
+  │   └── pre-tool-use.json        # Optional advisory confirmation hook example
+  ├── scripts/
+  │   ├── guard-dangerous-command.sh
+  │   └── run-project-checks.sh    # Optional POSIX helpers when sh is available
+  └── skills/
+    └── <domain>/
+      ├── SKILL.md
+      └── [optional bundled assets]
 ```
 
 ## Workflow
@@ -63,31 +75,36 @@ In VS Code Copilot Chat, type:
 ```
 
 The agent will:
-1. Read your project's `README.md`, `package.json` / `pyproject.toml` / `Cargo.toml`, `CONTRIBUTING.md`, and source files
-2. Identify your tech stack, conventions, build + test commands, and domain constraints
-3. Generate all `.github/` customization files in your project
-4. Ask for confirmation before writing
+1. Read your project's `README.md`, package manager manifest, architecture docs, and representative source and test files
+2. Identify your tech stack, conventions, build and test commands, runtime settings, and domain constraints
+3. Generate root `AGENTS.md`, `.github/`, `.vscode/settings.json`, prompts, and any hooks, helper scripts, or skill assets that fit the project's actual runtime conventions
+4. Show which files will be created or updated, then ask for confirmation before writing
+
+The included PreToolUse hook is a convenience example, not a hard security boundary. If you need stronger protection, point the hook at a user-managed script outside the repository or protect the helper script with OS-level permissions.
+
+Shell-based helpers assume a POSIX `sh` runtime. Setup should only generate them when the target project already relies on `sh`; otherwise it should skip them and leave a platform-specific follow-up to the user.
 
 ### 4. Close the template from the workspace (optional)
 
-Once setup is done, you can remove this repo from the workspace. The generated `.github/` is self-contained.
+Once setup is done, you can remove this repo from the workspace. The generated customization files live in `AGENTS.md`, `.github/`, and `.vscode/settings.json` inside your project.
 
 ### 5. Use the generated agents
 
 In your project:
 
 ```
-@<ProjectName>    # full autonomous agent
+@<ShortAgentName> # full autonomous agent, for example @APP
 @Plan             # design an implementation plan
-@Implementer      # execute a plan
 @Reviewer         # audit code changes
 @Verification     # run tests + lint
 @Explore          # read-only codebase exploration
 ```
 
+`Implementer` is primarily intended as a handoff target from `@Plan` rather than the main entry point for users.
+
 ## Re-running setup
 
-If the project structure changes significantly, re-run `@Setup` to update the customization files. The agent will diff against existing files and offer updates.
+If the project structure changes significantly, re-run `@Setup` to refresh the customization files. The agent will detect existing customization files and summarize which files should be created or updated.
 
 ## Template reference
 

@@ -51,15 +51,16 @@ In GitHub Copilot Chat, switch to the `@Setup` agent and provide your project pa
 @Setup /path/to/my-project
 ```
 
-The agent will go through 4 phases:
+The agent will go through 6 numbered phases:
 
 | Phase | What happens |
 |-------|-------------|
-| **0 — Confirm** | Lists existing `.github/` files; asks for confirmation |
-| **1 — Analyze** | Reads README, package.json/pyproject.toml, source + test files |
-| **2 — Generate** | Writes all `.github/` customization files |
-| **3 — Validate** | Checks YAML syntax, line count, placeholder fill |
-| **4 — Next steps** | Tells you what to do next |
+| **0 — Inspect** | Lists existing `AGENTS.md`, `.github/`, and `.vscode/settings.json`; starts read-only analysis |
+| **1 — Analyze** | Reads README, package.json/pyproject.toml, source + test files, and any existing customization files |
+| **2 — Plan writes** | Summarizes which files will be created, updated, or left unchanged and asks for confirmation |
+| **3 — Generate** | Writes root `AGENTS.md`, `.github/`, `.vscode/settings.json`, prompts, hooks, and helper scripts |
+| **4 — Validate** | Checks YAML syntax, JSON syntax, line count, and placeholder fill |
+| **5 — Next steps** | Tells you what to do next |
 
 Expected duration: 3-10 minutes depending on project size.
 
@@ -73,7 +74,11 @@ Open each generated file and spot-check:
 - `.github/copilot-instructions.md` — is the project summary accurate? Under 200 lines?
 - `.github/agents/*.agent.md` — do the `description` fields have meaningful trigger phrases?
 - `.github/instructions/*.instructions.md` — are `applyTo` globs correct for your codebase?
-- `.github/skills/*/SKILL.md` — is the domain procedure correct?
+- `.github/prompts/*.prompt.md` — do the prompt bodies route to the right agent with the right scope?
+- `.github/hooks/*.json` — if generated, do the hook commands point to existing scripts, and is the helper path appropriate for the level of protection you want?
+- `.github/scripts/*.sh` — if generated, do the wrappers use commands that actually exist in the project and match the project's runtime conventions?
+- `.github/skills/*/SKILL.md` — is the domain procedure correct, and do any bundled assets make sense?
+- `.vscode/settings.json` — are the recommended agent and skill settings appropriate for your workspace?
 
 Edit any file that needs tuning.
 
@@ -83,7 +88,7 @@ Edit any file that needs tuning.
 
 ```sh
 cd your-project
-git add AGENTS.md .github/
+git add AGENTS.md .github/ .vscode/settings.json
 git commit -m "chore: add Copilot agent customization"
 ```
 
@@ -129,7 +134,7 @@ If the project structure changes significantly, re-run `@Setup` to refresh:
 @Setup /path/to/my-project
 ```
 
-The agent will compare against existing files and offer diffs.
+The agent will inspect existing customization files, preserve matching patterns where useful, and summarize what it plans to create or update before writing.
 
 ---
 

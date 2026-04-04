@@ -1,24 +1,21 @@
 ---
 name: {{SKILL_NAME}}
 description: "{{SKILL_DESCRIPTION}} Triggers: {{SKILL_TRIGGERS}}."
-argument-hint: "{{SKILL_ARGUMENT_HINT}}"
 ---
-# {{SKILL_TITLE}}
+# {{SKILL_NAME}}
 
 ## When to Use
-{{SKILL_WHEN_TO_USE}}
+Use this skill for work involving {{SKILL_TRIGGERS}}.
 
-## Overview
+## Bundled Assets
 
-{{SKILL_OVERVIEW}}
+{{SKILL_ASSET_SECTION}}
 
-## Key Concepts
+## Procedure
 
-{{SKILL_KEY_CONCEPTS}}
+{{SKILL_CONTENT}}
 
-## Steps / Procedure
-
-{{SKILL_PROCEDURE}}
+If this skill includes bundled scripts or starter files, prefer those local assets over repeating long inline commands.
 
 ## Validation
 
@@ -28,13 +25,3 @@ After completing the procedure:
 {{BUILD_COMMAND}}
 {{TEST_COMMAND}}
 ```
-
-{{SKILL_VALIDATION_NOTES}}
-
-## Common Pitfalls
-
-{{SKILL_PITFALLS}}
-
-## Reference Files
-
-{{SKILL_REFERENCE_FILES}}
