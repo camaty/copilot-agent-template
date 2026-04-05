@@ -1,0 +1,62 @@
+# Event-driven autonomous trigger for {{PROJECT_NAME}}
+#
+# When a GitHub issue is labeled "{{COPILOT_LABEL}}", this workflow
+# automatically assigns it to the GitHub Copilot Coding Agent.
+# Copilot then runs the full autonomous pipeline defined in
+# .github/agents/{{AUTONOMOUS_AGENT_FILE}}.agent.md:
+#   Explore → Plan → Implement → Verify → Review → open PR
+#
+# This is the event-routing layer: humans label issues from any
+# interface (browser, phone, CLI); Copilot handles the execution.
+#
+# Usage:
+#   1. File or pick an issue describing the task
+#   2. Add the label "{{COPILOT_LABEL}}" to the issue
+#   3. Copilot will be assigned automatically and begin work
+#
+# To trigger manually without labeling, assign the issue directly
+# to the "copilot" user in the GitHub UI or via the API.
+
+name: "Assign to Copilot on label"
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  issues: write
+
+jobs:
+  assign-to-copilot:
+    if: github.event.label.name == '{{COPILOT_LABEL}}'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assign issue to Copilot
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Assign the issue to the Copilot bot user
+            await github.rest.issues.addAssignees({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              assignees: ['copilot']
+            });
+
+            // Post a comment so contributors know the agent has picked it up
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: [
+                '🤖 **Copilot is on it.**',
+                '',
+                'The autonomous agent will:',
+                '1. Explore the relevant code',
+                '2. Create an implementation plan',
+                '3. Implement, verify (lint + build + tests), and self-correct up to 3 times',
+                '4. Open a PR with a full change summary',
+                '',
+                'If a hard blocker is found, a follow-up comment will describe what needs human input.'
+              ].join('\n')
+            });

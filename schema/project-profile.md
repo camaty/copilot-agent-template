@@ -68,6 +68,7 @@ Each field is referenced as `{{FIELD_NAME}}` in the templates.
 | Placeholder | Description | Example |
 |---|---|---|
 | `{{AUTONOMOUS_AGENT_NAME}}` | Short name for the main autonomous agent | `APP` |
+| `{{AUTONOMOUS_AGENT_FILE}}` | Kebab-case filename of the autonomous agent (lowercase of name) | `app` |
 | `{{AUTONOMOUS_AGENT_DESCRIPTION}}` | Description for the agent picker | `Full autonomous coding agent for <project>` |
 
 ## Prompts
@@ -91,6 +92,7 @@ Repeat the block below for each prompt the setup agent should create (typically 
 | `{{SCRIPT_RUNTIME}}` | Helper-script runtime that is safe to assume | `sh` / `none` |
 | `{{HOOK_1_NAME}}` | Hook file name | `pre-tool-use.json` |
 | `{{HOOK_1_DESCRIPTION}}` | What the hook enforces | `Ask before obviously destructive terminal commands` |
+| `{{COPILOT_LABEL}}` | GitHub issue label that triggers the autonomous agent via Actions | `copilot` |
 
 ## Domain Skills
 
