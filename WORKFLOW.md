@@ -71,8 +71,6 @@ Expected duration: 3-10 minutes depending on project size.
 Open each generated file and spot-check:
 
 - `AGENTS.md` — does the file tree look right? Are the constraints accurate?
-- `CLAUDE.md` — (if generated) do the verification commands use fully qualified paths from repo root? Is the repo shape accurate?
-- `.claude.json` — (if generated) is the `defaultMode` setting appropriate for your workflow?
 - `.github/copilot-instructions.md` — is the project summary accurate? Under 200 lines?
 - `.github/agents/*.agent.md` — do the `description` fields have meaningful trigger phrases?
 - `.github/instructions/*.instructions.md` — are `applyTo` globs correct for your codebase?
@@ -90,10 +88,7 @@ Edit any file that needs tuning.
 
 ```sh
 cd your-project
-# Base files (always generated)
 git add AGENTS.md .github/ .vscode/settings.json
-# Claude Code files (only when generated; silently skipped if absent)
-git add CLAUDE.md .claude.json 2>/dev/null || :
 git commit -m "chore: add Copilot agent customization"
 ```
 
@@ -224,7 +219,6 @@ The agent will inspect existing customization files, preserve matching patterns 
 | `applyTo` glob not matching | Test the glob in the VS Code file search to verify it matches |
 | Agent not being discovered | Check that `description` contains the same keywords you type in chat |
 | Build commands use wrong directory | If your build root is a subdirectory (e.g. `rust/`), hint Setup: *"The Rust workspace is in rust/"* |
-| `CLAUDE.md` not generated | Setup generates it when `.claude.json`, `CLAUDE.md`, or `.claude/` is detected; add one of those to trigger generation, or add a `.claude.json` with `{"permissions":{"defaultMode":"default"}}` |
 | `copilot-autoassign.yml` not generated | Setup only generates it when GitHub Actions workflows already exist in `.github/workflows/`; create an empty workflow file to trigger detection, or add `--with-actions` to your `@Setup` prompt |
 | Copilot not picking up the issue | Ensure the issue is assigned to the `copilot` user (the workflow does this automatically on label) |
 | Handoff button missing in browser | Agents detect this and output the next step's prompt inline; paste it to continue |

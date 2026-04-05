@@ -136,8 +136,6 @@ For each skill, define:
 ### 1g. Inspect existing customization files
 If present, read representative existing customization files before regenerating anything:
 - `<TARGET_PROJECT>/AGENTS.md`
-- `<TARGET_PROJECT>/CLAUDE.md` (Claude Code guidance — if present, note **HAS_CLAUDE_MD**=true)
-- `<TARGET_PROJECT>/.claude.json` (Claude Code settings — if present, note **HAS_CLAUDE_JSON**=true and read existing permission mode)
 - `<TARGET_PROJECT>/.github/copilot-instructions.md`
 - 1-2 files from `<TARGET_PROJECT>/.github/agents/`
 - 1-2 files from `<TARGET_PROJECT>/.github/instructions/`
@@ -145,17 +143,6 @@ If present, read representative existing customization files before regenerating
 - 1-2 files from `<TARGET_PROJECT>/.github/hooks/`
 - 1-2 files from `<TARGET_PROJECT>/.github/skills/*/`
 - `<TARGET_PROJECT>/.vscode/settings.json`
-
-Also set **GENERATE_CLAUDE_FILES** = true if any of these hold:
-- `HAS_CLAUDE_MD` is true
-- `HAS_CLAUDE_JSON` is true
-- The project README or CLAUDE.md mentions "claude code" or "claw" as the primary AI tooling
-- A `.claude/` directory exists in `<TARGET_PROJECT>`
-
-Set **CLAUDE_DEFAULT_MODE**:
-- If `.claude.json` already exists and has a `defaultMode`, preserve that value
-- If the project's README or CLAUDE.md contains phrases such as "autonomous", "auto-approve", "dontAsk", "non-interactive", or describes a CI/CD or fully hands-free workflow, set to `dontAsk`
-- Otherwise default to `default`
 
 Preserve and reuse good existing patterns when they match the current project, including:
 - agent names, descriptions, and handoff structure
@@ -292,33 +279,7 @@ For each domain skill identified in Phase 1f:
 
 If `SCRIPT_RUNTIME` is `none`, do not generate shell wrapper assets. Keep the skill usable by documenting direct native commands inside `SKILL_N_CONTENT` and `SKILL_N_ASSET_SECTION` instead.
 
-#### 2.21 `CLAUDE.md` (project root) — only when `GENERATE_CLAUDE_FILES` is true
-Use template: `templates/CLAUDE.template.md`
-Covers: detected stack, verification commands from repo root, repository shape, working agreement.
-
-Fill placeholders:
-- `{{TECH_STACK}}` — primary language + `{{SECONDARY_LANGUAGES}}` if non-empty
-- `{{FRAMEWORKS}}` — detected frameworks or `none detected`
-- `{{CLAUDE_VERIFICATION_COMMANDS}}` — bullet list of fully qualified verification commands, one per bullet. For a Rust subdirectory workspace example:
-  ```
-  - Run Rust verification from `rust/`: `cd rust && cargo fmt`
-  - `cd rust && cargo clippy --workspace --all-targets -- -D warnings`
-  - `cd rust && cargo test --workspace`
-  ```
-- `{{CLAUDE_REPO_SHAPE}}` — 3-5 bullet lines describing top-level directories and their purpose (e.g. `` - `rust/` contains the Rust workspace and active CLI/runtime implementation. ``)
-- `{{CLAUDE_WORKING_AGREEMENT}}` — project-specific working agreements derived from `CONTRIBUTING.md`, `CLAUDE.md`, or `README.md`; omit if none found
-
-If `CLAUDE.md` already exists and `HAS_CLAUDE_MD` is true, classify as `update` and preserve any content not covered by the template structure.
-
-#### 2.22 `.claude.json` (project root) — only when `GENERATE_CLAUDE_FILES` is true
-Use template: `templates/claude.template.json`
-
-Fill placeholders:
-- `{{CLAUDE_DEFAULT_MODE}}` — value derived in Phase 1g (one of: `dontAsk`, `default`)
-
-If `.claude.json` already exists and `HAS_CLAUDE_JSON` is true, classify as `unchanged` by default. If the user explicitly asks to update the permission settings, ask them to confirm the new `defaultMode` value before writing.
-
-#### 2.23 `.github/workflows/copilot-autoassign.yml` — only when `GENERATE_TRIGGER_WORKFLOW` is true
+#### 2.21 `.github/workflows/copilot-autoassign.yml` — only when `GENERATE_TRIGGER_WORKFLOW` is true
 Use template: `templates/workflows/copilot-autoassign.template.yml`
 
 This is the **event-driven trigger**: when a GitHub issue is labeled `{{COPILOT_LABEL}}`, the workflow automatically assigns it to the Copilot Coding Agent, which then runs the full autonomous pipeline (explore → plan → implement → verify → review → PR) defined in `{{AUTONOMOUS_AGENT_FILE}}.agent.md`.
@@ -329,7 +290,7 @@ Fill placeholders:
 
 If `.github/workflows/copilot-autoassign.yml` already exists, classify as `unchanged`.
 
-#### 2.24 Write plan confirmation
+#### 2.22 Write plan confirmation
 After classifying every target file, present a concise table that includes each target path and whether it will be `created`, `updated`, or `unchanged`.
 
 Ask for confirmation in plain chat: *"I plan to create X files, update Y files, and leave Z unchanged. Proceed with the create/update writes?"*
@@ -348,9 +309,7 @@ If the user confirms, write only the files classified as `create` or `update` an
 5. Check that `copilot-instructions.md` is under 200 lines (trim if needed)
 6. For any generated shell scripts, check that they use LF line endings, start with a shebang, and point to commands that exist in the project
 7. Check that `AGENTS.md`, prompts, hook commands, and `.vscode/settings.json` reference the correct file paths for the actual project
-8. If `CLAUDE.md` was generated, verify that all verification commands use fully qualified paths from repo root (e.g. `cd rust && cargo test --workspace`), not relative paths that only work from a subdirectory
-9. If `.claude.json` was generated, verify it is valid JSON and the `defaultMode` value is one of: `dontAsk`, `default`
-10. If `copilot-autoassign.yml` was generated, verify the `COPILOT_LABEL` value matches the label name in the `if:` condition
+8. If `copilot-autoassign.yml` was generated, verify the `COPILOT_LABEL` value matches the label name in the `if:` condition
 
 Report a summary table:
 
@@ -371,7 +330,6 @@ Output instructions for the user:
 2. Commit them to the repo:
    ```sh
    git add AGENTS.md .github/ .vscode/settings.json
-   git add CLAUDE.md .claude.json 2>/dev/null || :
    git commit -m "chore: add Copilot agent customization"
    ```
 3. If the trigger workflow was generated, create the label in GitHub: **Issues → Labels → New label** named `{{COPILOT_LABEL}}`
@@ -383,7 +341,7 @@ Output instructions for the user:
 
 ## Constraints
 
-- **DO NOT** modify any source files in `TARGET_PROJECT` (only write to `.github/`, `.vscode/`, `AGENTS.md`, `CLAUDE.md`, and `.claude.json` at project root)
+- **DO NOT** modify any source files in `TARGET_PROJECT` (only write to `.github/`, `.vscode/`, and `AGENTS.md` at project root)
 - **DO NOT** overwrite without confirmation if files already exist
 - Keep `copilot-instructions.md` under 200 lines — it's always loaded into context
 - All generated agent names must be short (1-4 chars or 1 word) for chat ergonomics
