@@ -1,5 +1,7 @@
 # copilot-agent-template
 
+> 🌐 [日本語](./README.ja.md)
+
 A generalized VS Code GitHub Copilot agent customization kit. Given any project repository, the `@Setup` agent reads the codebase and generates a tailored customization package for that project: root `AGENTS.md`, workspace `.github/` files, and `.vscode/settings.json`.
 
 ## What it generates
