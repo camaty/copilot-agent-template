@@ -252,21 +252,31 @@ Keep it small and deterministic. It should call a generated helper script rather
 Treat the default hook as an advisory confirmation example, not a hard security boundary. If the target project needs stronger protection, tell the user to move the hook helper outside the repository or lock it down separately.
 Generate this hook only when `SCRIPT_RUNTIME` is `sh`. Otherwise skip it and note that a platform-appropriate hook can be added later.
 
-#### 2.15 `.github/scripts/guard-dangerous-command.sh` (optional)
+#### 2.15 `.github/hooks/post-tool-use.json` (optional)
+Use template: `templates/hooks/post-tool-use.template.json`
+Audit-log hook that records tool name and timestamp after every tool call. Useful for tracing pipeline progress and for debugging blocked lanes.
+Generate only when `SCRIPT_RUNTIME` is `sh`.
+
+#### 2.16 `.github/scripts/guard-dangerous-command.sh` (optional)
 Use template: `templates/scripts/guard-dangerous-command.template.sh`
-This script backs the sample hook and requests confirmation on obviously destructive commands.
+This script backs the pre-tool-use hook and requests confirmation on obviously destructive or credential-exposing commands.
 Generate it only when `SCRIPT_RUNTIME` is `sh`.
 
-#### 2.16 `.github/scripts/run-project-checks.sh` (optional)
+#### 2.17 `.github/scripts/log-tool-use.sh` (optional)
+Use template: `templates/scripts/log-tool-use.template.sh`
+Backs the post-tool-use hook. Appends a timestamped entry to `.github/tool-use.log`.
+Generate only when `SCRIPT_RUNTIME` is `sh`.
+
+#### 2.18 `.github/scripts/run-project-checks.sh` (optional)
 Use template: `templates/scripts/run-project-checks.template.sh`
 Fill it with the discovered verification commands. If a command is unavailable, remove that line or replace it with `:`.
 Generate it only when `SCRIPT_RUNTIME` is `sh`.
 
-#### 2.17 `.vscode/settings.json`
+#### 2.19 `.vscode/settings.json`
 Use template: `templates/settings/vscode-settings.template.json`
 Fill in the preferred model and keep skill locations aligned with generated folders.
 
-#### 2.18 Domain skill files
+#### 2.20 Domain skill files
 For each domain skill identified in Phase 1f:
 - Create `<TARGET_PROJECT>/.github/skills/<SKILL_N_NAME>/SKILL.md`
 - Use template: `templates/skills/core-domain/SKILL.template.md`
@@ -282,7 +292,7 @@ For each domain skill identified in Phase 1f:
 
 If `SCRIPT_RUNTIME` is `none`, do not generate shell wrapper assets. Keep the skill usable by documenting direct native commands inside `SKILL_N_CONTENT` and `SKILL_N_ASSET_SECTION` instead.
 
-#### 2.19 `CLAUDE.md` (project root) — only when `GENERATE_CLAUDE_FILES` is true
+#### 2.21 `CLAUDE.md` (project root) — only when `GENERATE_CLAUDE_FILES` is true
 Use template: `templates/CLAUDE.template.md`
 Covers: detected stack, verification commands from repo root, repository shape, working agreement.
 
@@ -300,7 +310,7 @@ Fill placeholders:
 
 If `CLAUDE.md` already exists and `HAS_CLAUDE_MD` is true, classify as `update` and preserve any content not covered by the template structure.
 
-#### 2.20 `.claude.json` (project root) — only when `GENERATE_CLAUDE_FILES` is true
+#### 2.22 `.claude.json` (project root) — only when `GENERATE_CLAUDE_FILES` is true
 Use template: `templates/claude.template.json`
 
 Fill placeholders:
@@ -308,7 +318,7 @@ Fill placeholders:
 
 If `.claude.json` already exists and `HAS_CLAUDE_JSON` is true, classify as `unchanged` by default. If the user explicitly asks to update the permission settings, ask them to confirm the new `defaultMode` value before writing.
 
-#### 2.21 `.github/workflows/copilot-autoassign.yml` — only when `GENERATE_TRIGGER_WORKFLOW` is true
+#### 2.23 `.github/workflows/copilot-autoassign.yml` — only when `GENERATE_TRIGGER_WORKFLOW` is true
 Use template: `templates/workflows/copilot-autoassign.template.yml`
 
 This is the **event-driven trigger**: when a GitHub issue is labeled `{{COPILOT_LABEL}}`, the workflow automatically assigns it to the Copilot Coding Agent, which then runs the full autonomous pipeline (explore → plan → implement → verify → review → PR) defined in `{{AUTONOMOUS_AGENT_FILE}}.agent.md`.
@@ -319,7 +329,7 @@ Fill placeholders:
 
 If `.github/workflows/copilot-autoassign.yml` already exists, classify as `unchanged`.
 
-#### 2.22 Write plan confirmation
+#### 2.24 Write plan confirmation
 After classifying every target file, present a concise table that includes each target path and whether it will be `created`, `updated`, or `unchanged`.
 
 Ask for confirmation in plain chat: *"I plan to create X files, update Y files, and leave Z unchanged. Proceed with the create/update writes?"*

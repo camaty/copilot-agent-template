@@ -26,16 +26,16 @@ This template replicates the three-layer autonomous pattern used by [claw-code](
 ├── .vscode/
 │   └── settings.json                  # Agent handoff + skill location settings
 └── .github/
-  ├── copilot-instructions.md        # Always-on workspace instructions
+  ├── copilot-instructions.md        # Always-on workspace instructions + env awareness
   ├── workflows/
   │   └── copilot-autoassign.yml     # Event trigger: label issue → Copilot opens PR
   ├── agents/
-  │   ├── <project>.agent.md         # Autonomous agent (explore→plan→implement→verify→review)
+  │   ├── <project>.agent.md         # Autonomous pipeline agent
   │   ├── explore.agent.md           # Read-only exploration
-  │   ├── plan.agent.md              # Task planning
-  │   ├── implementer.agent.md       # Executes plan, self-corrects on errors
+  │   ├── plan.agent.md              # Task planning, outputs plan for approval
+  │   ├── implementer.agent.md       # Executes an approved plan (lane events per step)
   │   ├── reviewer.agent.md          # Security + quality auditor
-  │   └── verification.agent.md      # Runs lint / build / tests
+  │   └── verification.agent.md      # Runs lint / build / tests / E2E gate
   ├── instructions/
   │   ├── src-coding.instructions.md
   │   └── testing.instructions.md
@@ -44,7 +44,8 @@ This template replicates the three-layer autonomous pattern used by [claw-code](
   │   ├── implement-change.prompt.md
   │   └── verify-workspace.prompt.md
   ├── hooks/
-  │   └── pre-tool-use.json          # Optional advisory confirmation hook
+  │   ├── pre-tool-use.json          # Advisory confirmation before destructive commands
+  │   └── post-tool-use.json         # Optional audit log after tool calls
   ├── scripts/
   │   ├── guard-dangerous-command.sh
   │   └── run-project-checks.sh      # Optional POSIX helpers when sh is available
@@ -119,6 +120,11 @@ Once setup is done, you can remove this repo from the workspace. The generated c
 @Explore          read-only codebase exploration
 ```
 
+Use prompt shortcuts from `.github/prompts/` (VS Code only):
+- **Plan Change** — structured plan for a feature or bugfix
+- **Implement Change** — run the full pipeline for a specific request
+- **Verify Workspace** — targeted lint/build/test run
+
 **From any device (GitHub issue → autonomous PR):**
 
 1. File or pick a GitHub issue describing the task
@@ -126,7 +132,32 @@ Once setup is done, you can remove this repo from the workspace. The generated c
 3. The `copilot-autoassign.yml` workflow assigns it to the Copilot Coding Agent
 4. The agent runs the full pipeline and opens a PR — no local environment needed
 
+To create the label if it doesn't already exist: **Issues → Labels → New label** → name it `copilot`.
+
+**From GitHub.com (browser agent session):**
+```
+@copilot implement <task description>
+@copilot plan <feature request>
+```
+Handoff buttons are not available in the browser; agents will output the next step's prompt inline for continuation.
+
 `Implementer` is primarily intended as a handoff target from `@Plan` rather than the main entry point for users.
+
+## Autonomous pipeline
+
+All agents emit structured lane events before and after each pipeline phase, making every state machine-readable:
+
+```
+▶ [LANE:explore]   → ✓ [LANE:explore:complete]
+▶ [LANE:plan]      → ✓ [LANE:plan:complete]
+▶ [LANE:implement] → ✓ [LANE:implement:complete]
+▶ [LANE:verify]    → ✓ [LANE:verify:complete]
+▶ [LANE:review]    → ✓ [LANE:review:complete]
+```
+
+A `✗ [LANE:{name}:blocked]` event means the lane failed and the pipeline is paused. The blocked agent reports the reason and, where possible, delegates back to the previous agent for self-correction.
+
+For large tasks that span multiple sessions, the autonomous agent emits a `SESSION CHECKPOINT` block at end-of-context so work can resume in a new session without re-running completed lanes.
 
 ## Re-running setup
 

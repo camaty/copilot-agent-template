@@ -62,6 +62,7 @@ Each field is referenced as `{{FIELD_NAME}}` in the templates.
 | `{{TEST_FRAMEWORK}}` | Test runner / framework | `node:test`, `pytest`, `jest`, `cargo test` |
 | `{{TEST_STRUCTURE}}` | Description of test tiers | `unit/ integration/ system/` |
 | `{{COVERAGE_TARGETS}}` | Coverage goals | `Statements ≥ 85%, Branches ≥ 80%` |
+| `{{E2E_GATE_COMMAND}}` | End-to-end regression gate command (required before merge) | `npm run test:e2e`, `cargo test --test e2e_harness` |
 
 ## Agents
 
@@ -73,7 +74,7 @@ Each field is referenced as `{{FIELD_NAME}}` in the templates.
 
 ## Prompts
 
-Repeat the block below for each prompt the setup agent should create (typically 2-3):
+Repeat the block below for each prompt the setup agent should create (typically 3-4):
 
 | Placeholder | Description | Example |
 |---|---|---|
@@ -93,6 +94,14 @@ Repeat the block below for each prompt the setup agent should create (typically 
 | `{{HOOK_1_NAME}}` | Hook file name | `pre-tool-use.json` |
 | `{{HOOK_1_DESCRIPTION}}` | What the hook enforces | `Ask before obviously destructive terminal commands` |
 | `{{COPILOT_LABEL}}` | GitHub issue label that triggers the autonomous agent via Actions | `copilot` |
+
+## Autonomous Pipeline and Issue Workflow
+
+| Placeholder | Description | Example |
+|---|---|---|
+| `{{FORBIDDEN_PATTERNS}}` | Anti-patterns that must never appear in source code; blast-radius gate checks these | `hardcoded API keys, unsafe_code, eval(user_input)` |
+| `{{ISSUE_TRIGGER_LABELS}}` | GitHub issue labels that scope agent-triggered tasks (informational) | `copilot`, `ai-task`, `autofix` |
+| `{{DOCS_DIR}}` | Documentation directory, used in architecture doc references | `docs` / `doc` |
 
 ## Domain Skills
 

@@ -124,6 +124,11 @@ git commit -m "chore: remove temporary agent-setup submodule"
 @Verification      Run all tests
 ```
 
+Use prompt shortcuts from `.github/prompts/` (VS Code only):
+- **Plan Change** — structured plan for a feature or bugfix
+- **Implement Change** — run the full pipeline for a specific request
+- **Verify Workspace** — targeted lint/build/test run
+
 ### From any device — event-driven autonomous run
 
 If the trigger workflow was generated (requires GitHub Actions on the project):
@@ -135,6 +140,65 @@ If the trigger workflow was generated (requires GitHub Actions on the project):
 5. Review the PR — no local environment needed
 
 To create the label if it doesn't already exist: **Issues → Labels → New label** → name it `copilot`.
+
+### From GitHub.com (browser agent session)
+
+On github.com, when you type `@copilot` in a PR comment, issue comment, or code review, Copilot reads `.github/copilot-instructions.md` as always-on context — **not** `.github/prompts/`. Handoff buttons are also not available.
+
+```
+@copilot Implement support for <feature> in <repo>
+@copilot Plan: how would I add <capability>?
+```
+
+Agents running without handoff buttons detect the environment and output each step's delegation prompt inline for continuation.
+
+### From a GitHub Issue
+
+> **Which mechanism applies depends on the surface — these are not interchangeable:**
+
+| Surface | How Copilot reads context | Prompt files used? |
+|---------|--------------------------|-------------------|
+| GitHub.com Issue → Assign to Copilot | Copilot reads `copilot-instructions.md` | ✗ |
+| GitHub.com Issue → "Open in Workspace" | Copilot reads `copilot-instructions.md` | ✗ |
+| `@copilot` mention in issue comment | Copilot reads `copilot-instructions.md` | ✗ |
+
+For github.com-based issue entry points, the functional coverage comes from the `copilot-instructions.md` "Starting from a GitHub Issue" section and the autonomous agent's frontmatter `description:` trigger phrases.
+
+**Assign issue to Copilot (github.com)**
+1. Open the issue on github.com
+2. In the Assignees panel, assign to **Copilot**
+3. Copilot reads `.github/copilot-instructions.md` and the issue body, then opens a Workspace session
+4. Acceptance criteria from `- [ ]` checkboxes become the definition of done
+
+---
+
+## Autonomous pipeline overview
+
+All agents participate in a five-lane pipeline. Each agent emits structured lane events so every state is machine-readable and resumable:
+
+```
+┌──────────┐    ┌──────────┐    ┌─────────────┐    ┌──────────┐    ┌──────────┐
+│ explore  │───▶│  plan    │───▶│  implement  │───▶│  verify  │───▶│  review  │
+└──────────┘    └──────────┘    └─────────────┘    └──────────┘    └──────────┘
+     ▲                ▲                ▲                 ▲                ▲
+     │                │                │                 │                │
+  @Explore          @Plan          @Implementer     @Verification    @Reviewer
+  (read-only)    (plan only)      (per-step lint)   (E2E gate)    (OWASP check)
+```
+
+Lane event format:
+```
+▶ [LANE:{name}]               # phase starting
+✓ [LANE:{name}:complete]      # phase passed
+✗ [LANE:{name}:blocked]       # phase failed; pipeline paused
+▶ [LANE:implement:step:{N}]   # per-step within implement
+```
+
+On `blocked`: the autonomous agent delegates back to the upstream agent for self-correction, then re-runs the blocked lane.
+
+### Session checkpointing
+
+For tasks that span multiple Copilot sessions, the autonomous agent emits a `SESSION CHECKPOINT` block before context ends. When resuming, provide the checkpoint to the agent and it will skip already-completed lanes.
 
 ---
 
@@ -163,3 +227,5 @@ The agent will inspect existing customization files, preserve matching patterns 
 | `CLAUDE.md` not generated | Setup generates it when `.claude.json`, `CLAUDE.md`, or `.claude/` is detected; add one of those to trigger generation, or add a `.claude.json` with `{"permissions":{"defaultMode":"default"}}` |
 | `copilot-autoassign.yml` not generated | Setup only generates it when GitHub Actions workflows already exist in `.github/workflows/`; create an empty workflow file to trigger detection, or add `--with-actions` to your `@Setup` prompt |
 | Copilot not picking up the issue | Ensure the issue is assigned to the `copilot` user (the workflow does this automatically on label) |
+| Handoff button missing in browser | Agents detect this and output the next step's prompt inline; paste it to continue |
+| Issue task is ambiguous | Agent asks one clarifying question; answer it to start the pipeline |

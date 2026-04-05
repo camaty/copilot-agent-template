@@ -1,0 +1,11 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "type": "command",
+        "command": "sh .github/scripts/log-tool-use.sh",
+        "timeout": 5
+      }
+    ]
+  }
+}
