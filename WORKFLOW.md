@@ -115,19 +115,26 @@ git commit -m "chore: remove temporary agent-setup submodule"
 
 ## Step 7 — Start using agents
 
-In a new Copilot Chat, try:
+### From VS Code Copilot Chat
 
 ```
-@Plan  Add support for <some feature>
+@<ShortAgentName>  Implement <feature>   # full autonomous run
+@Plan              Add support for <feature>
+@Explore           How does <subsystem> work?
+@Verification      Run all tests
 ```
 
-```
-@Explore  How does <subsystem> work?
-```
+### From any device — event-driven autonomous run
 
-```
-@Verification  Run all tests
-```
+If the trigger workflow was generated (requires GitHub Actions on the project):
+
+1. File a GitHub issue describing the task in plain language
+2. Add the label `copilot` (or the label you chose during setup)
+3. The workflow assigns the issue to the Copilot Coding Agent automatically
+4. The agent runs: explore → plan → implement → verify (with up to 3 self-correction retries) → review → open PR
+5. Review the PR — no local environment needed
+
+To create the label if it doesn't already exist: **Issues → Labels → New label** → name it `copilot`.
 
 ---
 
@@ -154,3 +161,5 @@ The agent will inspect existing customization files, preserve matching patterns 
 | Agent not being discovered | Check that `description` contains the same keywords you type in chat |
 | Build commands use wrong directory | If your build root is a subdirectory (e.g. `rust/`), hint Setup: *"The Rust workspace is in rust/"* |
 | `CLAUDE.md` not generated | Setup generates it when `.claude.json`, `CLAUDE.md`, or `.claude/` is detected; add one of those to trigger generation, or add a `.claude.json` with `{"permissions":{"defaultMode":"default"}}` |
+| `copilot-autoassign.yml` not generated | Setup only generates it when GitHub Actions workflows already exist in `.github/workflows/`; create an empty workflow file to trigger detection, or add `--with-actions` to your `@Setup` prompt |
+| Copilot not picking up the issue | Ensure the issue is assigned to the `copilot` user (the workflow does this automatically on label) |
