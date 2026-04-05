@@ -7,6 +7,8 @@ A generalized VS Code GitHub Copilot agent customization kit. Given any project 
 ```
 <your-project>/
 ├── AGENTS.md                        # Project constraints + file map
+├── CLAUDE.md                        # Claude Code guidance (generated when .claude.json or CLAUDE.md detected)
+├── .claude.json                     # Claude Code permission settings (generated when Claude Code patterns detected)
 ├── .vscode/
 │   └── settings.json                # Agent handoff + skill location settings
 └── .github/
@@ -78,7 +80,8 @@ The agent will:
 1. Read your project's `README.md`, package manager manifest, architecture docs, and representative source and test files
 2. Identify your tech stack, conventions, build and test commands, runtime settings, and domain constraints
 3. Generate root `AGENTS.md`, `.github/`, `.vscode/settings.json`, prompts, and any hooks, helper scripts, or skill assets that fit the project's actual runtime conventions
-4. Show which files will be created or updated, then ask for confirmation before writing
+4. If the project uses Claude Code (detected via `.claude.json`, `CLAUDE.md`, or a `.claude/` directory), also generate `CLAUDE.md` and `.claude.json`
+5. Show which files will be created or updated, then ask for confirmation before writing
 
 The included PreToolUse hook is a convenience example, not a hard security boundary. If you need stronger protection, point the hook at a user-managed script outside the repository or protect the helper script with OS-level permissions.
 
@@ -109,6 +112,12 @@ If the project structure changes significantly, re-run `@Setup` to refresh the c
 ## Template reference
 
 See [`templates/`](./templates/) for the raw templates with `{{PLACEHOLDER}}` markers. The setup agent fills these in automatically from project analysis.
+
+Key templates:
+- `templates/AGENTS.template.md` — project constraints and file map (always generated)
+- `templates/CLAUDE.template.md` — Claude Code guidance (generated when Claude Code patterns detected)
+- `templates/claude.template.json` — Claude Code permission settings (generated when Claude Code patterns detected)
+- `templates/copilot-instructions.template.md` — always-on Copilot instructions
 
 ## Schema reference
 
