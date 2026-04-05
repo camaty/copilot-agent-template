@@ -53,25 +53,41 @@ Extract:
 - **PRIMARY_LANGUAGE** — dominant language
 
 ### 1b. Identify build + test surface
-Read (first match wins):
-- `<TARGET_PROJECT>/package.json` (Node.js / JS / TS)
-- `<TARGET_PROJECT>/pyproject.toml` or `setup.py` or `setup.cfg` (Python)
-- `<TARGET_PROJECT>/Cargo.toml` (Rust)
-- `<TARGET_PROJECT>/go.mod` (Go)
-- `<TARGET_PROJECT>/Makefile` (any)
-- `<TARGET_PROJECT>/pom.xml` or `build.gradle` (JVM)
+Scan for manifest files at the root **and** in common one-level subdirectories (`rust/`, `backend/`, `server/`, `frontend/`, `app/`, `packages/`, `cmd/`).
+
+Primary manifest (first match wins — root takes precedence over subdirectory):
+- `<TARGET_PROJECT>/package.json` → Node.js / JS / TS (root)
+- `<TARGET_PROJECT>/pyproject.toml` or `setup.py` or `setup.cfg` → Python (root)
+- `<TARGET_PROJECT>/Cargo.toml` → Rust (root)
+- `<TARGET_PROJECT>/go.mod` → Go (root)
+- `<TARGET_PROJECT>/Makefile` → any (root)
+- `<TARGET_PROJECT>/pom.xml` or `build.gradle` → JVM (root)
+- `<TARGET_PROJECT>/rust/Cargo.toml` → Rust workspace in `rust/` subdirectory
+- `<TARGET_PROJECT>/backend/Cargo.toml` → Rust workspace in `backend/` subdirectory
+- `<TARGET_PROJECT>/<subdir>/Cargo.toml` for other one-level subdirectories
+- `<TARGET_PROJECT>/<subdir>/package.json` for other one-level subdirectories
+
+When the primary manifest is in a subdirectory, set **BUILD_ROOT** to that subdirectory (e.g., `rust/`) and prefix all commands with `cd {{BUILD_ROOT}} && `.
+
+Also scan for **secondary** manifests that indicate additional languages are present:
+- If primary is Rust but `src/__init__.py`, `setup.py`, or `pyproject.toml` exists → also note Python surface
+- If primary is Python but `Cargo.toml` or `rust/Cargo.toml` exists → also note Rust surface
+- Record all detected languages in **SECONDARY_LANGUAGES** (comma-separated)
 
 Extract:
+- **BUILD_ROOT** — subdirectory containing the primary manifest, or `.` if root (e.g., `rust/`)
 - **PACKAGE_MANAGER** (`npm`, `pip`, `cargo`, `go`, `make`, etc.)
-- **BUILD_COMMAND** (`npm run build`, `cargo build`, `make`, etc.)
-- **LINT_COMMAND** (`npm run lint`, `ruff check .`, `cargo clippy`, etc.)
-- **TEST_COMMAND** (`npm test`, `pytest`, `cargo test`, etc.)
+- **BUILD_COMMAND** — fully qualified from repo root (e.g., `cd rust && cargo build --workspace`)
+- **LINT_COMMAND** — fully qualified from repo root (e.g., `cd rust && cargo clippy --workspace --all-targets -- -D warnings`)
+- **TEST_COMMAND** — fully qualified from repo root (e.g., `cd rust && cargo test --workspace`)
 - **TEST_UNIT_COMMAND** (if separate from `TEST_COMMAND`)
+- **SECONDARY_LANGUAGES** — other languages present (may be empty)
 
 ### 1c. Map source structure
 - List the top-level directory of `TARGET_PROJECT`
-- Identify **SOURCE_DIR** (typically `src/`, `lib/`, `pkg/`, the main module folder)
-- Identify **OUTPUT_DIR** (typically `build/`, `dist/`, `target/`, `out/`)
+- Identify **SOURCE_DIR** (typically `src/`, `lib/`, `pkg/`, `<BUILD_ROOT>/src/`, `<BUILD_ROOT>/crates/`, or the main module folder)
+- Identify **OUTPUT_DIR** (typically `build/`, `dist/`, `<BUILD_ROOT>/target/`, `out/`)
+- For Rust workspaces in a subdirectory: list `<BUILD_ROOT>/crates/` to see top-level crate structure; each subfolder of `crates/` is a crate
 - List `<TARGET_PROJECT>/<SOURCE_DIR>` to see top-level modules
 - Read 3-5 representative source files to understand naming conventions and import style
 
@@ -120,6 +136,8 @@ For each skill, define:
 ### 1g. Inspect existing customization files
 If present, read representative existing customization files before regenerating anything:
 - `<TARGET_PROJECT>/AGENTS.md`
+- `<TARGET_PROJECT>/CLAUDE.md` (Claude Code guidance — if present, note **HAS_CLAUDE_MD**=true)
+- `<TARGET_PROJECT>/.claude.json` (Claude Code settings — if present, note **HAS_CLAUDE_JSON**=true and read existing permission mode)
 - `<TARGET_PROJECT>/.github/copilot-instructions.md`
 - 1-2 files from `<TARGET_PROJECT>/.github/agents/`
 - 1-2 files from `<TARGET_PROJECT>/.github/instructions/`
@@ -127,6 +145,17 @@ If present, read representative existing customization files before regenerating
 - 1-2 files from `<TARGET_PROJECT>/.github/hooks/`
 - 1-2 files from `<TARGET_PROJECT>/.github/skills/*/`
 - `<TARGET_PROJECT>/.vscode/settings.json`
+
+Also set **GENERATE_CLAUDE_FILES** = true if any of these hold:
+- `HAS_CLAUDE_MD` is true
+- `HAS_CLAUDE_JSON` is true
+- The project README or CLAUDE.md mentions "claude code" or "claw" as the primary AI tooling
+- A `.claude/` directory exists in `<TARGET_PROJECT>`
+
+Set **CLAUDE_DEFAULT_MODE**:
+- If `.claude.json` already exists and has a `defaultMode`, preserve that value
+- If the project's README or CLAUDE.md contains phrases such as "autonomous", "auto-approve", "dontAsk", "non-interactive", or describes a CI/CD or fully hands-free workflow, set to `dontAsk`
+- Otherwise default to `default`
 
 Preserve and reuse good existing patterns when they match the current project, including:
 - agent names, descriptions, and handoff structure
@@ -143,6 +172,17 @@ Set **SCRIPT_RUNTIME** to:
 - `none` if that assumption is not safe
 
 Default to `none` when in doubt. Do not generate POSIX-only helper scripts for Windows-first projects unless the existing project conventions already rely on `sh`.
+
+### 1i. Detect GitHub Actions usage
+Check whether `<TARGET_PROJECT>/.github/workflows/` exists and contains any `.yml` or `.yaml` files.
+
+Set **HAS_GITHUB_ACTIONS** = true if any workflow files are found, or if the project README or CI section mentions GitHub Actions.
+
+Set **COPILOT_LABEL** to:
+- The existing label used to route work to Copilot if one is already documented (look for `copilot`, `auto-pilot`, or similar in existing workflow files)
+- Otherwise default to `copilot`
+
+Set **GENERATE_TRIGGER_WORKFLOW** = true if **HAS_GITHUB_ACTIONS** is true. This allows the event-driven autonomous trigger (labeled issue → Copilot agent) to be added alongside existing workflows.
 
 ---
 
@@ -242,7 +282,44 @@ For each domain skill identified in Phase 1f:
 
 If `SCRIPT_RUNTIME` is `none`, do not generate shell wrapper assets. Keep the skill usable by documenting direct native commands inside `SKILL_N_CONTENT` and `SKILL_N_ASSET_SECTION` instead.
 
-#### 2.19 Write plan confirmation
+#### 2.19 `CLAUDE.md` (project root) — only when `GENERATE_CLAUDE_FILES` is true
+Use template: `templates/CLAUDE.template.md`
+Covers: detected stack, verification commands from repo root, repository shape, working agreement.
+
+Fill placeholders:
+- `{{TECH_STACK}}` — primary language + `{{SECONDARY_LANGUAGES}}` if non-empty
+- `{{FRAMEWORKS}}` — detected frameworks or `none detected`
+- `{{CLAUDE_VERIFICATION_COMMANDS}}` — bullet list of fully qualified verification commands, one per bullet. For a Rust subdirectory workspace example:
+  ```
+  - Run Rust verification from `rust/`: `cd rust && cargo fmt`
+  - `cd rust && cargo clippy --workspace --all-targets -- -D warnings`
+  - `cd rust && cargo test --workspace`
+  ```
+- `{{CLAUDE_REPO_SHAPE}}` — 3-5 bullet lines describing top-level directories and their purpose (e.g. `` - `rust/` contains the Rust workspace and active CLI/runtime implementation. ``)
+- `{{CLAUDE_WORKING_AGREEMENT}}` — project-specific working agreements derived from `CONTRIBUTING.md`, `CLAUDE.md`, or `README.md`; omit if none found
+
+If `CLAUDE.md` already exists and `HAS_CLAUDE_MD` is true, classify as `update` and preserve any content not covered by the template structure.
+
+#### 2.20 `.claude.json` (project root) — only when `GENERATE_CLAUDE_FILES` is true
+Use template: `templates/claude.template.json`
+
+Fill placeholders:
+- `{{CLAUDE_DEFAULT_MODE}}` — value derived in Phase 1g (one of: `dontAsk`, `default`)
+
+If `.claude.json` already exists and `HAS_CLAUDE_JSON` is true, classify as `unchanged` by default. If the user explicitly asks to update the permission settings, ask them to confirm the new `defaultMode` value before writing.
+
+#### 2.21 `.github/workflows/copilot-autoassign.yml` — only when `GENERATE_TRIGGER_WORKFLOW` is true
+Use template: `templates/workflows/copilot-autoassign.template.yml`
+
+This is the **event-driven trigger**: when a GitHub issue is labeled `{{COPILOT_LABEL}}`, the workflow automatically assigns it to the Copilot Coding Agent, which then runs the full autonomous pipeline (explore → plan → implement → verify → review → PR) defined in `{{AUTONOMOUS_AGENT_FILE}}.agent.md`.
+
+Fill placeholders:
+- `{{COPILOT_LABEL}}` — value derived in Phase 1i (default: `copilot`)
+- `{{AUTONOMOUS_AGENT_FILE}}` — kebab-case filename of the autonomous agent, derived by lowercasing `AUTONOMOUS_AGENT_NAME` (e.g. `APP` → `app`, `MY-APP` → `my-app`); used as the `.agent.md` base name
+
+If `.github/workflows/copilot-autoassign.yml` already exists, classify as `unchanged`.
+
+#### 2.22 Write plan confirmation
 After classifying every target file, present a concise table that includes each target path and whether it will be `created`, `updated`, or `unchanged`.
 
 Ask for confirmation in plain chat: *"I plan to create X files, update Y files, and leave Z unchanged. Proceed with the create/update writes?"*
@@ -256,11 +333,14 @@ If the user confirms, write only the files classified as `create` or `update` an
 
 1. List all generated files with their sizes and statuses: `created`, `updated`, or `unchanged`
 2. Verify YAML frontmatter in each `.agent.md`, `.instructions.md`, and `.prompt.md` is syntactically valid (no bare colons in values, proper `---` delimiters)
-3. Verify generated `.json` files are syntactically valid JSON
+3. Verify generated `.json` files are syntactically valid JSON; verify generated `.yml` workflow files are syntactically valid YAML
 4. Check that every `description` field contains meaningful trigger phrases
 5. Check that `copilot-instructions.md` is under 200 lines (trim if needed)
 6. For any generated shell scripts, check that they use LF line endings, start with a shebang, and point to commands that exist in the project
 7. Check that `AGENTS.md`, prompts, hook commands, and `.vscode/settings.json` reference the correct file paths for the actual project
+8. If `CLAUDE.md` was generated, verify that all verification commands use fully qualified paths from repo root (e.g. `cd rust && cargo test --workspace`), not relative paths that only work from a subdirectory
+9. If `.claude.json` was generated, verify it is valid JSON and the `defaultMode` value is one of: `dontAsk`, `default`
+10. If `copilot-autoassign.yml` was generated, verify the `COPILOT_LABEL` value matches the label name in the `if:` condition
 
 Report a summary table:
 
@@ -278,16 +358,24 @@ If any file could not be generated or needs manual review, flag it clearly.
 
 Output instructions for the user:
 1. Review the generated files (suggest opening `AGENTS.md` first)
-2. Commit them to the repo: `git add AGENTS.md .github/ .vscode/settings.json && git commit -m "chore: add Copilot agent customization"`
-3. Close this template repo from the VS Code workspace (or remove the submodule)
-4. Open a new chat and try: `@Plan add a new feature to <PROJECT_NAME>`
+2. Commit them to the repo:
+   ```sh
+   git add AGENTS.md .github/ .vscode/settings.json
+   git add CLAUDE.md .claude.json 2>/dev/null || :
+   git commit -m "chore: add Copilot agent customization"
+   ```
+3. If the trigger workflow was generated, create the label in GitHub: **Issues → Labels → New label** named `{{COPILOT_LABEL}}`
+4. Close this template repo from the VS Code workspace (or remove the submodule)
+5. To use the autonomous agent from VS Code: open a new chat and type `@{{AUTONOMOUS_AGENT_NAME}} <task description>`
+6. To use the autonomous agent from any device: file a GitHub issue, add the label `{{COPILOT_LABEL}}`, and Copilot will open a PR
 
 ---
 
 ## Constraints
 
-- **DO NOT** modify any source files in `TARGET_PROJECT` (only write to `.github/`, `.vscode/`, and `AGENTS.md` at project root)
+- **DO NOT** modify any source files in `TARGET_PROJECT` (only write to `.github/`, `.vscode/`, `AGENTS.md`, `CLAUDE.md`, and `.claude.json` at project root)
 - **DO NOT** overwrite without confirmation if files already exist
 - Keep `copilot-instructions.md` under 200 lines — it's always loaded into context
 - All generated agent names must be short (1-4 chars or 1 word) for chat ergonomics
 - `description` fields must be quoted strings if they contain colons
+- When `BUILD_ROOT` is a subdirectory, all generated verification commands must be fully qualified from repo root (e.g. `cd rust && cargo test --workspace`); never assume the shell is already in the subdirectory
