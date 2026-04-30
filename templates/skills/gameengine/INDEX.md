@@ -17,7 +17,8 @@ Engine-specific scripting, rendering features, asset pipelines, gameplay framewo
 | Unity (C#, MonoBehaviour, ScriptableObject, URP/HDRP, Addressables) | [`unity/SKILL.md`](./unity/SKILL.md) |
 | Unreal Engine (C++/Blueprints, UE5, Niagara, Lumen, Nanite) | [`unreal/SKILL.md`](./unreal/SKILL.md) |
 | Synthetic-data generation (Unity Perception, Unreal MRQ, Omniverse Replicator) for ML training | [`synthetic-data/SKILL.md`](./synthetic-data/SKILL.md) |
-| Godot, Bevy, custom engine | _add a new subdomain — see [`../EXTENDING.md`](../EXTENDING.md)_ |
+| Godot 4.x (GDScript / C# / GDExtension, scenes, signals, autoload, multiplayer) | [`godot/SKILL.md`](./godot/SKILL.md) |
+| Bevy or custom engine | _add a new subdomain — see [`../EXTENDING.md`](../EXTENDING.md)_ |
 
 ## Facet vocabulary
 
@@ -27,7 +28,7 @@ Engine-specific scripting, rendering features, asset pipelines, gameplay framewo
 | `target:`   | `pc`, `console`, `mobile`, `vr`, `xr`, `web`, `gpu` |
 | `pipeline:` | `urp`, `hdrp`, `builtin`, `lumen`, `nanite`, `perception`, `replicator` |
 | `genre:`    | `fps`, `rpg`, `puzzle`, `simulation`, `multiplayer`, `synthetic-data` |
-| `vendor:`   | `unity`, `unreal`, `nvidia-omniverse` |
+| `vendor:`   | `unity`, `unreal`, `nvidia-omniverse`, `godot` |
 
 ## Shared resources
 

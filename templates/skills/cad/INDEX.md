@@ -17,6 +17,7 @@ B-rep / NURBS solid modeling, parametric history, assemblies and constraints, dr
 | Feature-based parametric modeling (Fusion 360, SolidWorks, Onshape, FreeCAD, NX) | [`parametric/SKILL.md`](./parametric/SKILL.md) |
 | LLM-driven CAD/CG API calls that need a schema-validated action space and geometry checker | [`api-harness/SKILL.md`](./api-harness/SKILL.md) |
 | Programmatic multi-part assembly with topology constraints, snap rules, or connector-based mates | [`topology-assembly/SKILL.md`](./topology-assembly/SKILL.md) |
+| Open-source FreeCAD automation via Python, headless `freecadcmd`, custom workbenches, OCCT scripting | [`freecad-scripting/SKILL.md`](./freecad-scripting/SKILL.md) |
 | Direct/explicit modeling (SpaceClaim, Creo Direct), MBD, GD&T-heavy | _add a new subdomain — see [`../EXTENDING.md`](../EXTENDING.md)_ |
 | Mesh or generative-design output | _add a new subdomain or use [`3dcg`](../3dcg/INDEX.md) for downstream rendering_ |
 

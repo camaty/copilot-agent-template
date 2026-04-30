@@ -23,6 +23,9 @@ Pick the first matching row.
 | Distributes codegen across a planner model and multiple local executor models (Map-Reduce, multi-agent) | [`mapreduce-codegen/SKILL.md`](./mapreduce-codegen/SKILL.md) |
 | Moving multi-GB 3D binary assets (splats, point clouds, datasets) over UDP-based protocols (Aspera/QUIC/UDT) | [`spatial-transfer/SKILL.md`](./spatial-transfer/SKILL.md) |
 | Static security analysis (CodeQL, secret scanning, dependency review) over agent- or LLM-generated code | [`agent-sca/SKILL.md`](./agent-sca/SKILL.md) |
+| Designing public/internal HTTP/REST/gRPC APIs, OpenAPI/Protobuf schemas, versioning, pagination, idempotency | [`api-design/SKILL.md`](./api-design/SKILL.md) |
+| Logs, metrics, traces, OpenTelemetry, SLI/SLO/error budgets, dashboards as code | [`observability/SKILL.md`](./observability/SKILL.md) |
+| Schema design, migrations, indexes, transactions, query plans across SQL / document / vector stores | [`databases/SKILL.md`](./databases/SKILL.md) |
 | _none of the above_ | apply [`_shared/`](./_shared/) only and proceed with general practice |
 
 Add a new subdomain only when its canon and pitfall set diverge meaningfully from the above. See [`../EXTENDING.md`](../EXTENDING.md).
@@ -34,7 +37,7 @@ Add a new subdomain only when its canon and pitfall set diverge meaningfully fro
 | `lang:`    | `python`, `typescript`, `javascript`, `rust`, `go`, `c`, `cpp`, `java`, `kotlin`, `swift`, `ruby`, `csharp`, `shell`, `glsl`, `wgsl` |
 | `target:`  | `linux`, `macos`, `windows`, `wasm`, `mcu`, `rtos`, `browser`, `mobile`, `gpu`, `network` |
 | `style:`   | `oop`, `functional`, `data-oriented`, `actor`, `event-driven` |
-| `vendor:`  | `openai`, `qwen`, `anthropic`, `mistral`, `github-advanced-security`, `aspera` |
+| `vendor:`  | `openai`, `qwen`, `anthropic`, `mistral`, `github-advanced-security`, `aspera`, `opentelemetry`, `prometheus`, `grafana`, `postgres` |
 
 ## Shared resources
 

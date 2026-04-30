@@ -33,22 +33,42 @@ templates/skills/
 │   │   ├── canon.md
 │   │   └── pitfalls.md
 │   ├── network/SKILL.md
-│   └── embedded/SKILL.md
+│   ├── embedded/SKILL.md
+│   ├── webgpu/SKILL.md
+│   ├── shader-sim/SKILL.md
+│   ├── mapreduce-codegen/SKILL.md
+│   ├── spatial-transfer/SKILL.md
+│   ├── agent-sca/SKILL.md
+│   ├── api-design/SKILL.md
+│   ├── observability/SKILL.md
+│   └── databases/SKILL.md
 ├── 3dcg/                           # 3D CG / DCC tools
 │   ├── INDEX.md
 │   ├── blender/SKILL.md
-│   └── houdini/SKILL.md
+│   ├── houdini/SKILL.md
+│   ├── 3dgs/SKILL.md
+│   ├── garment-sim/SKILL.md
+│   └── usd-pipeline/SKILL.md
 ├── cad/                            # parametric / mechanical CAD
 │   ├── INDEX.md
-│   └── parametric/SKILL.md
+│   ├── parametric/SKILL.md
+│   ├── api-harness/SKILL.md
+│   ├── topology-assembly/SKILL.md
+│   └── freecad-scripting/SKILL.md
 ├── ml/                             # machine learning
 │   ├── INDEX.md
 │   ├── training/SKILL.md
-│   └── inference/SKILL.md
+│   ├── inference/SKILL.md
+│   ├── motion-fm/SKILL.md
+│   ├── vlm-spatial/SKILL.md
+│   ├── llm-finetuning/SKILL.md
+│   └── diffusion/SKILL.md
 └── gameengine/                     # real-time CG / game engines
     ├── INDEX.md
     ├── unity/SKILL.md
-    └── unreal/SKILL.md
+    ├── unreal/SKILL.md
+    ├── synthetic-data/SKILL.md
+    └── godot/SKILL.md
 ```
 
 ## Selection flow (what an agent reads, in order)
@@ -90,10 +110,10 @@ See [`EXTENDING.md`](./EXTENDING.md).
 
 ## Skill catalog (Generative Spatial Computing)
 
-[`SKILL_CATALOG.md`](./SKILL_CATALOG.md) lists all 12 planned skills across the five priority clusters (web graphics, AI/CAD, digital humans, secure infra, embodied AI), each with a numeric ID. Pass any subset of IDs to `@Setup generate-skills` to scaffold them in parallel:
+[`SKILL_CATALOG.md`](./SKILL_CATALOG.md) lists 20 catalogued skills across nine clusters — the original five priority clusters (web graphics, AI/CAD, digital humans, secure infra, embodied AI) plus four follow-on clusters covering cross-cutting service foundations (API design, observability, databases), pipeline & open-source CAD/CG (OpenUSD, FreeCAD), generative-model specialisations (LLM fine-tuning, diffusion), and an open-source game engine (Godot). Each entry has a numeric ID; pass any subset to `@Setup generate-skills` to scaffold them in parallel:
 
 ```
 @Setup generate-skills 1 2 3          # generate skills #1, #2, and #3
 @Setup generate-skills cluster:1      # generate all skills in cluster 1
-@Setup generate-skills all            # generate all 12 skills
+@Setup generate-skills all            # generate all 20 skills
 ```

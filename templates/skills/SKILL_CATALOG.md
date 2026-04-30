@@ -8,7 +8,7 @@
 > @Setup generate-skills 1 3 7          # generate skills #1, #3, and #7
 > @Setup generate-skills 1-5            # generate skills #1 through #5
 > @Setup generate-skills cluster:2      # generate all skills in cluster 2
-> @Setup generate-skills all            # generate all 12 skills
+> @Setup generate-skills all            # generate all 20 skills
 > ```
 >
 > The agent reads this catalog, resolves each ID to its `target_path`, `domain`, `subdomain`, and `facets`, then scaffolds the files using `_layout/SUBDOMAIN_SKILL.template.md` (for subdomains) or `_layout/DOMAIN_INDEX.template.md` (for new domain index files).
@@ -395,6 +395,281 @@ update_files:
 
 ---
 
+## Cluster 6 — Cross-cutting Service Foundations
+
+Skills covering the building blocks every networked service eventually needs: API contracts, observability signals, and data stores.
+
+| ID | Name | Target path | Domain | Subdomain | Key facets |
+|----|------|-------------|--------|-----------|------------|
+| 13 | API design (REST / gRPC / OpenAPI / Protobuf) | `coding/api-design/SKILL.md` | `coding` | `api-design` | `lang:python`, `lang:typescript`, `lang:go`, `target:network` |
+| 14 | Observability (logs / metrics / traces / OTel / SLOs) | `coding/observability/SKILL.md` | `coding` | `observability` | `lang:python`, `lang:typescript`, `lang:go`, `target:network` |
+| 15 | Databases (relational / document / vector, schema, migrations) | `coding/databases/SKILL.md` | `coding` | `databases` | `lang:python`, `lang:typescript`, `lang:go`, `target:linux` |
+
+### ID 13 — API design
+
+```yaml
+id: 13
+target_path: coding/api-design/SKILL.md
+domain: coding
+subdomain: api-design
+facets:
+  - lang:python
+  - lang:typescript
+  - lang:go
+  - target:network
+applies_when:
+  any_of:
+    - "task designs a new HTTP, REST, or gRPC API surface"
+    - "task introduces or evolves an OpenAPI / Protobuf schema"
+    - "task adds versioning, pagination, idempotency, or error semantics to an existing API"
+description: >
+  Patterns for spec-first API design (OpenAPI 3.1, Protobuf): resource modelling,
+  cursor pagination, idempotency keys, error envelopes, backwards compatibility,
+  and contract testing.
+new_files:
+  - coding/api-design/SKILL.md
+update_files:
+  - coding/INDEX.md
+```
+
+### ID 14 — Observability
+
+```yaml
+id: 14
+target_path: coding/observability/SKILL.md
+domain: coding
+subdomain: observability
+facets:
+  - lang:python
+  - lang:typescript
+  - lang:go
+  - lang:rust
+  - target:network
+applies_when:
+  any_of:
+    - "task adds or improves logs, metrics, traces, or profiling for a service"
+    - "task instruments code with OpenTelemetry / Prometheus / OpenMetrics"
+    - "task defines SLIs / SLOs / error budgets"
+description: >
+  Instrumentation patterns: OpenTelemetry SDKs, structured logs, RED/USE
+  methodology, low-cardinality metrics + high-cardinality traces, multi-window
+  multi-burn-rate SLO alerts, dashboards-as-code.
+new_files:
+  - coding/observability/SKILL.md
+update_files:
+  - coding/INDEX.md
+```
+
+### ID 15 — Databases
+
+```yaml
+id: 15
+target_path: coding/databases/SKILL.md
+domain: coding
+subdomain: databases
+facets:
+  - lang:python
+  - lang:typescript
+  - lang:go
+  - target:linux
+applies_when:
+  any_of:
+    - "task designs or migrates a database schema (relational, document, or vector)"
+    - "task tunes a slow query, an index, or a transaction"
+    - "task adds caching, replication, or sharding to a data tier"
+    - "task integrates a vector store for retrieval"
+description: >
+  Schema design, online migrations, indexing strategies, isolation/MVCC,
+  N+1 avoidance, connection pooling, replication, and pgvector-style vector
+  retrieval; query-plan-driven optimisation discipline.
+new_files:
+  - coding/databases/SKILL.md
+update_files:
+  - coding/INDEX.md
+```
+
+---
+
+## Cluster 7 — Pipeline Authoring & Open-Source CAD/CG
+
+Skills covering OpenUSD authoring across DCC tools and FreeCAD-based open-source CAD automation.
+
+| ID | Name | Target path | Domain | Subdomain | Key facets |
+|----|------|-------------|--------|-----------|------------|
+| 16 | OpenUSD pipeline (layers, references, payloads, variants) | `3dcg/usd-pipeline/SKILL.md` | `3dcg` | `usd-pipeline` | `lang:python`, `format:usd`, `pipeline:vfx` |
+| 19 | FreeCAD scripting (headless `freecadcmd`, OCCT, workbenches) | `cad/freecad-scripting/SKILL.md` | `cad` | `freecad-scripting` | `lang:python`, `vendor:freecad`, `format:step` |
+
+### ID 16 — OpenUSD pipeline
+
+```yaml
+id: 16
+target_path: 3dcg/usd-pipeline/SKILL.md
+domain: 3dcg
+subdomain: usd-pipeline
+facets:
+  - lang:python
+  - lang:cpp
+  - format:usd
+  - pipeline:vfx
+  - pipeline:archviz
+applies_when:
+  any_of:
+    - "task authors or composes USD scenes (`.usda`, `.usdc`, `.usdz`)"
+    - "task uses references, payloads, variants, sublayers, or specialises"
+    - "task ships an asset resolver, USD plugin, or USD-driven pipeline stage"
+description: >
+  Cross-DCC OpenUSD authoring: composition arcs (LIVRPS), kinds, schemas,
+  asset resolvers (Ar 2.0), variants, and `usdz` packaging — including
+  `usdchecker` and CI round-trip patterns.
+new_files:
+  - 3dcg/usd-pipeline/SKILL.md
+update_files:
+  - 3dcg/INDEX.md
+```
+
+### ID 19 — FreeCAD scripting
+
+```yaml
+id: 19
+target_path: cad/freecad-scripting/SKILL.md
+domain: cad
+subdomain: freecad-scripting
+facets:
+  - lang:python
+  - vendor:freecad
+  - format:step
+  - format:brep
+applies_when:
+  any_of:
+    - "task automates FreeCAD via Python (`App`, `Part`, `PartDesign`, `Sketcher`)"
+    - "task runs FreeCAD headlessly via `freecadcmd` for batch generation"
+    - "task ships a FreeCAD workbench, macro, or CI-generated CAD asset"
+description: >
+  Open-source parametric CAD automation: spreadsheet-driven parameters,
+  PartDesign feature trees, headless `freecadcmd` in CI, toponaming-aware
+  authoring, and STEP round-trip validation.
+new_files:
+  - cad/freecad-scripting/SKILL.md
+update_files:
+  - cad/INDEX.md
+```
+
+---
+
+## Cluster 8 — Generative-Model Specialisations
+
+Skills covering LLM fine-tuning (PEFT + alignment) and diffusion model training/inference.
+
+| ID | Name | Target path | Domain | Subdomain | Key facets |
+|----|------|-------------|--------|-----------|------------|
+| 17 | LLM fine-tuning (LoRA / QLoRA / DPO / ORPO) | `ml/llm-finetuning/SKILL.md` | `ml` | `llm-finetuning` | `lang:python`, `framework:huggingface`, `precision:int4` |
+| 18 | Diffusion models (training, schedulers, ControlNet, distillation) | `ml/diffusion/SKILL.md` | `ml` | `diffusion` | `lang:python`, `framework:huggingface`, `precision:bf16` |
+
+### ID 17 — LLM fine-tuning
+
+```yaml
+id: 17
+target_path: ml/llm-finetuning/SKILL.md
+domain: ml
+subdomain: llm-finetuning
+facets:
+  - lang:python
+  - framework:pytorch
+  - framework:huggingface
+  - target:gpu
+  - precision:bf16
+  - precision:int4
+applies_when:
+  any_of:
+    - "task fine-tunes a pretrained LLM (full or PEFT)"
+    - "task uses LoRA, QLoRA, or other parameter-efficient adapters"
+    - "task aligns a model with DPO, ORPO, KTO, or RLHF"
+    - "task curates an SFT or preference dataset for instruction tuning"
+description: >
+  PEFT (LoRA, QLoRA), instruction tuning, and preference optimisation
+  (DPO/ORPO) for LLMs: chat-template discipline, loss masking, sequence
+  packing, evaluation against task-specific + general benchmarks, adapter
+  merging, and quantised serving.
+new_files:
+  - ml/llm-finetuning/SKILL.md
+update_files:
+  - ml/INDEX.md
+```
+
+### ID 18 — Diffusion models
+
+```yaml
+id: 18
+target_path: ml/diffusion/SKILL.md
+domain: ml
+subdomain: diffusion
+facets:
+  - lang:python
+  - framework:pytorch
+  - framework:huggingface
+  - target:gpu
+  - precision:fp16
+  - precision:bf16
+applies_when:
+  any_of:
+    - "task trains, fine-tunes, or distils a diffusion model"
+    - "task implements or tunes a sampler (DDIM, DPM-Solver, LCM, Turbo)"
+    - "task adds ControlNet, IP-Adapter, T2I-Adapter, or LoRA to a diffusion pipeline"
+    - "task optimises diffusion inference latency"
+description: >
+  Diffusion / flow-matching for image, video, and audio: schedulers,
+  classifier-free guidance, ControlNet / IP-Adapter / LoRA, EMA, Min-SNR
+  weighting, step distillation (LCM, Turbo, Hyper-SD), and inference perf.
+new_files:
+  - ml/diffusion/SKILL.md
+update_files:
+  - ml/INDEX.md
+```
+
+---
+
+## Cluster 9 — Open-Source Game Engine
+
+Skills covering Godot 4.x, the leading open-source competitor to Unity / Unreal.
+
+| ID | Name | Target path | Domain | Subdomain | Key facets |
+|----|------|-------------|--------|-----------|------------|
+| 20 | Godot 4.x (GDScript / C# / GDExtension, scenes, multiplayer) | `gameengine/godot/SKILL.md` | `gameengine` | `godot` | `lang:gdscript`, `lang:csharp`, `vendor:godot` |
+
+### ID 20 — Godot
+
+```yaml
+id: 20
+target_path: gameengine/godot/SKILL.md
+domain: gameengine
+subdomain: godot
+facets:
+  - lang:gdscript
+  - lang:csharp
+  - lang:cpp
+  - target:pc
+  - target:mobile
+  - target:web
+  - vendor:godot
+applies_when:
+  any_of:
+    - "task targets Godot 4.x"
+    - "task involves GDScript, C# (Mono), or GDExtension scripting"
+    - "task involves scenes, nodes, signals, groups, or autoloads"
+    - "task uses Godot's high-level multiplayer API"
+description: >
+  Open-source real-time engine workflows on Godot 4.x: scene-tree composition,
+  signal-driven architecture, custom resources, autoloads, server-authoritative
+  multiplayer via the high-level API, GDExtension bindings, and headless CI
+  exports.
+new_files:
+  - gameengine/godot/SKILL.md
+update_files:
+  - gameengine/INDEX.md
+```
+
+---
+
 ## Quick-reference table
 
 | ID | Cluster | Subdomain | Target path |
@@ -411,6 +686,14 @@ update_files:
 | 10 | 4 — Secure Infra | agent-sca | `coding/agent-sca/SKILL.md` |
 | 11 | 5 — Embodied AI | synthetic-data | `gameengine/synthetic-data/SKILL.md` |
 | 12 | 5 — Embodied AI | vlm-spatial | `ml/vlm-spatial/SKILL.md` |
+| 13 | 6 — Service Foundations | api-design | `coding/api-design/SKILL.md` |
+| 14 | 6 — Service Foundations | observability | `coding/observability/SKILL.md` |
+| 15 | 6 — Service Foundations | databases | `coding/databases/SKILL.md` |
+| 16 | 7 — Pipeline & OSS CAD/CG | usd-pipeline | `3dcg/usd-pipeline/SKILL.md` |
+| 17 | 8 — Generative Models | llm-finetuning | `ml/llm-finetuning/SKILL.md` |
+| 18 | 8 — Generative Models | diffusion | `ml/diffusion/SKILL.md` |
+| 19 | 7 — Pipeline & OSS CAD/CG | freecad-scripting | `cad/freecad-scripting/SKILL.md` |
+| 20 | 9 — OSS Game Engine | godot | `gameengine/godot/SKILL.md` |
 
 ## Scaffold commands (agent reference)
 
