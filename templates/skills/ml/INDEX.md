@@ -16,6 +16,7 @@ Data preparation, model architecture and training, evaluation methodology, hyper
 |---|---|
 | Training, fine-tuning, dataset prep, evaluation, experiment tracking | [`training/SKILL.md`](./training/SKILL.md) |
 | Serving, batch inference, quantization, deployment, latency/throughput | [`inference/SKILL.md`](./inference/SKILL.md) |
+| Extracting skeletal kinematics from video, BVH generation, or avatar retargeting | [`motion-fm/SKILL.md`](./motion-fm/SKILL.md) |
 | End-to-end MLOps / pipelines spanning both | start with `training`, then read `inference` |
 
 ## Facet vocabulary
@@ -27,6 +28,7 @@ Data preparation, model architecture and training, evaluation methodology, hyper
 | `task:`        | `cv`, `nlp`, `llm`, `tabular`, `rl`, `multimodal`, `tts`, `asr` |
 | `target:`      | `gpu`, `cpu`, `tpu`, `mobile`, `edge`, `browser-wasm` |
 | `precision:`   | `fp32`, `fp16`, `bf16`, `int8`, `int4` |
+| `format:`      | `bvh`, `vrm` |
 
 ## Shared resources
 
