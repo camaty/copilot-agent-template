@@ -87,3 +87,13 @@ Keep a single SKILL.md ≤ 2,000 tokens. Move depth into siblings (`canon.md`, `
 ## Extending
 
 See [`EXTENDING.md`](./EXTENDING.md).
+
+## Skill catalog (Generative Spatial Computing)
+
+[`SKILL_CATALOG.md`](./SKILL_CATALOG.md) lists all 12 planned skills across the five priority clusters (web graphics, AI/CAD, digital humans, secure infra, embodied AI), each with a numeric ID. Pass any subset of IDs to `@Setup generate-skills` to scaffold them in parallel:
+
+```
+@Setup generate-skills 1 2 3          # generate skills #1, #2, and #3
+@Setup generate-skills cluster:1      # generate all skills in cluster 1
+@Setup generate-skills all            # generate all 12 skills
+```

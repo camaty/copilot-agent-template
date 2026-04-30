@@ -123,6 +123,7 @@ VS Code Copilot Chat で次のように入力します:
 - [`templates/skills/README.md`](./templates/skills/README.md) — レイヤーモデルとディレクトリレイアウト
 - [`templates/skills/EXTENDING.md`](./templates/skills/EXTENDING.md) — モデルを壊さずに新しいドメイン／サブドメインを追加する方法
 - [`templates/skills/_layout/`](./templates/skills/_layout/) — 再利用可能な `DOMAIN_INDEX.template.md` と `SUBDOMAIN_SKILL.template.md`
+- [`templates/skills/SKILL_CATALOG.md`](./templates/skills/SKILL_CATALOG.md) — Generative Spatial Computing の全 12 スキルを番号付きで一覧したカタログ。`@Setup generate-skills` にIDを渡すことで任意のサブセットを並列スキャフォールドできる
 
 ### 優先ドメイン: Generative Spatial Computing
 

@@ -181,6 +181,7 @@ See [`schema/project-profile.md`](./schema/project-profile.md) for the full list
 - [`templates/skills/README.md`](./templates/skills/README.md) — layering model and directory layout
 - [`templates/skills/EXTENDING.md`](./templates/skills/EXTENDING.md) — how to add a new domain or subdomain without breaking the model
 - [`templates/skills/_layout/`](./templates/skills/_layout/) — reusable `DOMAIN_INDEX.template.md` and `SUBDOMAIN_SKILL.template.md`
+- [`templates/skills/SKILL_CATALOG.md`](./templates/skills/SKILL_CATALOG.md) — numbered catalog of all planned Generative Spatial Computing skills; pass IDs to `@Setup generate-skills` to scaffold any subset in parallel
 
 ### Priority domains: Generative Spatial Computing
 
