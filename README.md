@@ -181,3 +181,32 @@ See [`schema/project-profile.md`](./schema/project-profile.md) for the full list
 - [`templates/skills/README.md`](./templates/skills/README.md) — layering model and directory layout
 - [`templates/skills/EXTENDING.md`](./templates/skills/EXTENDING.md) — how to add a new domain or subdomain without breaking the model
 - [`templates/skills/_layout/`](./templates/skills/_layout/) — reusable `DOMAIN_INDEX.template.md` and `SUBDOMAIN_SKILL.template.md`
+- [`templates/skills/SKILL_CATALOG.md`](./templates/skills/SKILL_CATALOG.md) — numbered catalog of all planned Generative Spatial Computing skills; pass IDs to `@Setup generate-skills` to scaffold any subset in parallel
+
+### Priority domains: Generative Spatial Computing
+
+The base domains above (coding, 3DCG, CAD, ML, game engines) compose into a wider vector this template prioritizes for skill authoring: **autonomous, secure spatial computing** at the intersection of 3DGS, foundation models, networking, and security. New skills under `templates/skills/` should land in one of the following clusters first:
+
+1. **Next-gen web graphics & spatial rendering**
+   - WebGPU and TSL/WGSL rendering optimization (multi-pass shaders, direct GPU compute in the browser).
+   - 3DGS viewer hardening and super-resolution (FSR) — streaming, editing, and compositing large Splat datasets on the web.
+   - Physics-based volumetric simulation (Taylor–Sedov blast, fluids) implemented entirely inside GLSL/WGSL shaders.
+
+2. **Deterministic AI control (harness engineering) & procedural CAD**
+   - Smart-CG APIs for agent integration: strict API schemas + deterministic checkers so LLMs cannot hallucinate invalid 3D scenes.
+   - Topology-constrained assembly automation (e.g. "IKEA topology", point-to-point mates) for programmatically generating functional CAD models such as gears and furniture.
+   - Map-Reduce multi-agent code-generation ecosystems: a high-level structural planner coordinating local executor models (e.g. Qwen) that consult layered references.
+
+3. **Digital humans & motion foundation models**
+   - Autoregressive motion generation and BVH extraction from monocular RGB video, retargetable to standards like VRM.
+   - 2D-to-3D cross-simulation and garment fitting: turning flat designs into avatar-ready 3D clothing with physically plausible drape.
+
+4. **Secure development & transport infrastructure for spatial assets**
+   - High-throughput transfer of large 3D binaries (Aspera-style UDP-based protocols) for seamless sync of 3DGS scenes and training datasets.
+   - Static security analysis (SCA) over agent-generated code and 3D pipelines via GitHub Advanced Security — catching injection, async race conditions, and similar issues introduced by autonomous agents.
+
+5. **Embodied AI & synthetic data generation**
+   - Unity / Unreal Engine simulation environments for training inertial-navigation and autonomous-mobility models on physically accurate synthetic data.
+   - VLM (vision-language model) integration for spatial understanding: interpreting point clouds and 3DGS captures of real spaces and autonomously editing their semantic layout.
+
+When adding a skill, place it under the most specific existing base domain (e.g. `3dcg/3dgs/`, `coding/webgpu/`, `gameengine/unity-synthetic-data/`) and use `facets:` in the SKILL.md front-matter to mark which of the five clusters above it serves.

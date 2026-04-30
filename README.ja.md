@@ -115,3 +115,40 @@ VS Code Copilot Chat で次のように入力します:
 ## スキーマリファレンス
 
 抽出対象の全リストは [`schema/project-profile.md`](./schema/project-profile.md) を参照してください。生成された `AGENTS.md` を編集することで、エージェントが把握する情報を調整できます。
+
+## ドメインスキル足場
+
+`templates/skills/` は、生成されたエージェントが参照するドメイン固有の知識パックの足場を提供します — コーディング（ネットワーク、組込み）、3D CG（Blender、Houdini）、CAD（パラメトリック）、機械学習（学習、推論）、ゲームエンジン（Unity、Unreal）。レイアウトは **`<domain>/<subdomain>/SKILL.md`** 形式で、言語・ターゲット・ベンダーなどの直交軸はフォルダーを深くするのではなくフロントマターの `facets:` で表現します。
+
+- [`templates/skills/README.md`](./templates/skills/README.md) — レイヤーモデルとディレクトリレイアウト
+- [`templates/skills/EXTENDING.md`](./templates/skills/EXTENDING.md) — モデルを壊さずに新しいドメイン／サブドメインを追加する方法
+- [`templates/skills/_layout/`](./templates/skills/_layout/) — 再利用可能な `DOMAIN_INDEX.template.md` と `SUBDOMAIN_SKILL.template.md`
+- [`templates/skills/SKILL_CATALOG.md`](./templates/skills/SKILL_CATALOG.md) — Generative Spatial Computing の全 12 スキルを番号付きで一覧したカタログ。`@Setup generate-skills` にIDを渡すことで任意のサブセットを並列スキャフォールドできる
+
+### 優先ドメイン: Generative Spatial Computing
+
+上記のベースドメイン（コーディング・3DCG・CAD・ML・ゲームエンジン）は、本テンプレートがスキル整備の優先ベクトルとして据える、より広い領域 — **3DGS・基盤モデル・ネットワーク・セキュリティが交差する「自律的でセキュアな空間コンピューティング」** — を構成します。`templates/skills/` 配下に新しいスキルを追加する際は、まず以下のクラスタのいずれかに位置付けてください。
+
+1. **次世代Webグラフィックスと空間レンダリング基盤**
+   - WebGPU および TSL/WGSL によるレンダリング最適化（マルチパスシェーダー、ブラウザ上での直接 GPU 計算）。
+   - 3DGS ビューアの高度化と超解像（FSR）— 大容量 Splat データを Web 上でリアルタイムにストリーミング・編集・コンポジット。
+   - 物理ベースのボリュメトリック・シミュレーション（Taylor–Sedov 爆発モデル、流体演算）を GLSL/WGSL シェーダー内で完結させる実装。
+
+2. **決定論的AI制御（ハーネス・エンジニアリング）とプロシージャル CAD**
+   - スマート CG API とエージェント連携：厳格な API スキーマと決定論的チェッカーで LLM のハルシネーションを排除し、確実な 3D シーン構築を担保するアーキテクチャ。
+   - トポロジー制約型のアセンブリ自動化（"IKEA トポロジー"、Point-to-Point 合致など）による歯車・家具などの機能的 CAD モデル自動生成。
+   - 上位の構造設計モデルと、階層化リファレンスを参照する下位ローカルモデル群（Qwen 等）を並列稼働させる Map-Reduce 型のマルチエージェント・コード生成エコシステム。
+
+3. **デジタルヒューマンとモーション基盤モデル**
+   - 単一 RGB 動画から骨格キネマティクスを抽出し VRM 等に適用可能な BVH を生成する自己回帰型モーション生成基盤モデル。
+   - 2D-to-3D のクロスシミュレーションとフィッティング：平面デザインからアバター適用可能な 3D 衣服を生成し、自然なドレープを物理演算で再現するパイプライン。
+
+4. **空間アセットのためのセキュアな開発・通信インフラ**
+   - 大容量 3D バイナリの高速転送プロトコル（Aspera 等の UDP ベース高帯域幅転送）による 3DGS シーン・学習データセットのシームレス同期基盤。
+   - GitHub Advanced Security 等を利用した、エージェントが自動生成したスクリプト／3D パイプラインの静的セキュリティ解析（SCA）— インジェクションや非同期処理の競合などを検出。
+
+5. **Embodied AI（身体性AI）と合成データ生成**
+   - Unity / Unreal Engine を用いたシミュレーション環境構築：慣性航法モデルや自律移動アルゴリズムの訓練向けに、物理的に正確な合成データをゲームエンジン上で大量生成。
+   - 空間認識のための VLM（視覚言語モデル）統合：3D スキャン現実空間（点群・3DGS）を AI に解釈させ、オブジェクトのセマンティックなレイアウトを自律的に編集・再構成。
+
+新しいスキルを追加するときは、最も適合する既存ベースドメイン配下（例：`3dcg/3dgs/`、`coding/webgpu/`、`gameengine/unity-synthetic-data/`）に置き、SKILL.md のフロントマター `facets:` で上記 5 クラスタのどれに資するかを明示してください。
