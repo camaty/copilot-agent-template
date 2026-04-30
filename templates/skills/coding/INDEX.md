@@ -18,6 +18,7 @@ Pick the first matching row.
 |---|---|
 | Sockets, HTTP/gRPC servers, protocol design, latency or throughput SLOs | [`network/SKILL.md`](./network/SKILL.md) |
 | Microcontrollers, RTOS, bare-metal, memory-constrained targets, hardware peripherals | [`embedded/SKILL.md`](./embedded/SKILL.md) |
+| WebGPU compute/render pipelines, TSL or WGSL shader authoring, high-performance GPU compute in a browser | [`webgpu/SKILL.md`](./webgpu/SKILL.md) |
 | Physically based volumetric simulations (blast waves, fluids, smoke) encoded in GLSL/WGSL shaders | [`shader-sim/SKILL.md`](./shader-sim/SKILL.md) |
 | _none of the above_ | apply [`_shared/`](./_shared/) only and proceed with general practice |
 
