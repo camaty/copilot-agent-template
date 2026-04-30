@@ -18,6 +18,7 @@ Pick the first matching row.
 |---|---|
 | Sockets, HTTP/gRPC servers, protocol design, latency or throughput SLOs | [`network/SKILL.md`](./network/SKILL.md) |
 | Microcontrollers, RTOS, bare-metal, memory-constrained targets, hardware peripherals | [`embedded/SKILL.md`](./embedded/SKILL.md) |
+| Distributes codegen across a planner model and multiple local executor models (Map-Reduce, multi-agent) | [`mapreduce-codegen/SKILL.md`](./mapreduce-codegen/SKILL.md) |
 | _none of the above_ | apply [`_shared/`](./_shared/) only and proceed with general practice |
 
 Add a new subdomain only when its canon and pitfall set diverge meaningfully from the above. See [`../EXTENDING.md`](../EXTENDING.md).
@@ -29,6 +30,7 @@ Add a new subdomain only when its canon and pitfall set diverge meaningfully fro
 | `lang:`    | `python`, `typescript`, `javascript`, `rust`, `go`, `c`, `cpp`, `java`, `kotlin`, `swift`, `ruby`, `csharp`, `shell` |
 | `target:`  | `linux`, `macos`, `windows`, `wasm`, `mcu`, `rtos`, `browser`, `mobile` |
 | `style:`   | `oop`, `functional`, `data-oriented`, `actor`, `event-driven` |
+| `vendor:`  | `openai`, `qwen`, `anthropic`, `mistral`, `github-advanced-security` |
 
 ## Shared resources
 
