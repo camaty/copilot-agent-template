@@ -173,3 +173,11 @@ Key templates:
 ## Schema reference
 
 See [`schema/project-profile.md`](./schema/project-profile.md) for the full list of extraction targets. You can edit the generated `AGENTS.md` to tune what the agents know.
+
+## Domain skills scaffold
+
+`templates/skills/` ships a scaffold for domain-specific knowledge packs that the generated agents consult — coding (network, embedded), 3D CG (Blender, Houdini), CAD (parametric), machine learning (training, inference), and game engines (Unity, Unreal). The layout is **`<domain>/<subdomain>/SKILL.md`** with orthogonal axes (language, target, vendor, …) expressed as `facets:` in the front-matter rather than as deeper folders.
+
+- [`templates/skills/README.md`](./templates/skills/README.md) — layering model and directory layout
+- [`templates/skills/EXTENDING.md`](./templates/skills/EXTENDING.md) — how to add a new domain or subdomain without breaking the model
+- [`templates/skills/_layout/`](./templates/skills/_layout/) — reusable `DOMAIN_INDEX.template.md` and `SUBDOMAIN_SKILL.template.md`
