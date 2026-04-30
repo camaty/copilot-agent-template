@@ -17,6 +17,9 @@ Data preparation, model architecture and training, evaluation methodology, hyper
 | Training, fine-tuning, dataset prep, evaluation, experiment tracking | [`training/SKILL.md`](./training/SKILL.md) |
 | Serving, batch inference, quantization, deployment, latency/throughput | [`inference/SKILL.md`](./inference/SKILL.md) |
 | Extracting skeletal kinematics from video, BVH generation, or avatar retargeting | [`motion-fm/SKILL.md`](./motion-fm/SKILL.md) |
+| Vision-language reasoning over a 3D scene (point cloud / 3DGS), scene-graph extraction, autonomous re-arrangement | [`vlm-spatial/SKILL.md`](./vlm-spatial/SKILL.md) |
+| Fine-tuning LLMs (LoRA, QLoRA, full FT), instruction tuning, preference optimisation (DPO, ORPO, RLHF) | [`llm-finetuning/SKILL.md`](./llm-finetuning/SKILL.md) |
+| Diffusion / flow-matching models (image, video, audio): training, schedulers, ControlNet, LoRA, step distillation | [`diffusion/SKILL.md`](./diffusion/SKILL.md) |
 | End-to-end MLOps / pipelines spanning both | start with `training`, then read `inference` |
 
 ## Facet vocabulary
@@ -28,7 +31,7 @@ Data preparation, model architecture and training, evaluation methodology, hyper
 | `task:`        | `cv`, `nlp`, `llm`, `tabular`, `rl`, `multimodal`, `tts`, `asr` |
 | `target:`      | `gpu`, `cpu`, `tpu`, `mobile`, `edge`, `browser-wasm` |
 | `precision:`   | `fp32`, `fp16`, `bf16`, `int8`, `int4` |
-| `format:`      | `bvh`, `vrm` |
+| `format:`      | `bvh`, `vrm`, `splat`, `pcd` |
 
 ## Shared resources
 

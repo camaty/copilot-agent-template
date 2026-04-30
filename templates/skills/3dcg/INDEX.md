@@ -17,6 +17,8 @@ Asset creation pipelines, scene assembly, materials/shaders for offline renderin
 | Blender (modeling, geometry nodes, Python add-ons, EEVEE / Cycles) | [`blender/SKILL.md`](./blender/SKILL.md) |
 | Houdini (procedural, VEX, HDAs, Solaris/USD, Karma, simulations) | [`houdini/SKILL.md`](./houdini/SKILL.md) |
 | 3D Gaussian Splatting viewer, FSR super-resolution, splat streaming or compositing | [`3dgs/SKILL.md`](./3dgs/SKILL.md) |
+| 2D-to-3D garment generation and physics-based cloth on parametric avatars (SMPL/VRM) | [`garment-sim/SKILL.md`](./garment-sim/SKILL.md) |
+| Authoring or composing OpenUSD scenes (layers, references, payloads, variants, kinds, asset resolvers) | [`usd-pipeline/SKILL.md`](./usd-pipeline/SKILL.md) |
 | Maya, 3ds Max, Cinema 4D, Modo, ZBrush, Substance | _add a new subdomain — see [`../EXTENDING.md`](../EXTENDING.md)_ |
 
 ## Facet vocabulary
@@ -25,9 +27,9 @@ Asset creation pipelines, scene assembly, materials/shaders for offline renderin
 |---|---|
 | `lang:`     | `python`, `vex`, `mel`, `osl`, `hlsl`, `glsl`, `ts`, `wgsl` |
 | `renderer:` | `cycles`, `eevee`, `karma`, `arnold`, `redshift`, `vray`, `renderman` |
-| `format:`   | `usd`, `alembic`, `fbx`, `gltf`, `obj`, `splat` |
-| `pipeline:` | `solo`, `studio`, `vfx`, `archviz`, `product` |
-| `target:`   | `browser` |
+| `format:`   | `usd`, `alembic`, `fbx`, `gltf`, `obj`, `splat`, `pcd` |
+| `pipeline:` | `solo`, `studio`, `vfx`, `archviz`, `product`, `avatar` |
+| `target:`   | `browser`, `avatar` |
 
 ## Shared resources
 
