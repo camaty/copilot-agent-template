@@ -18,6 +18,7 @@ Pick the first matching row.
 |---|---|
 | Sockets, HTTP/gRPC servers, protocol design, latency or throughput SLOs | [`network/SKILL.md`](./network/SKILL.md) |
 | Microcontrollers, RTOS, bare-metal, memory-constrained targets, hardware peripherals | [`embedded/SKILL.md`](./embedded/SKILL.md) |
+| WebGPU compute/render pipelines, TSL or WGSL shader authoring, high-performance GPU compute in a browser | [`webgpu/SKILL.md`](./webgpu/SKILL.md) |
 | _none of the above_ | apply [`_shared/`](./_shared/) only and proceed with general practice |
 
 Add a new subdomain only when its canon and pitfall set diverge meaningfully from the above. See [`../EXTENDING.md`](../EXTENDING.md).
@@ -26,7 +27,7 @@ Add a new subdomain only when its canon and pitfall set diverge meaningfully fro
 
 | Axis | Allowed values |
 |---|---|
-| `lang:`    | `python`, `typescript`, `javascript`, `rust`, `go`, `c`, `cpp`, `java`, `kotlin`, `swift`, `ruby`, `csharp`, `shell` |
+| `lang:`    | `python`, `typescript`, `javascript`, `rust`, `go`, `c`, `cpp`, `java`, `kotlin`, `swift`, `ruby`, `csharp`, `shell`, `wgsl` |
 | `target:`  | `linux`, `macos`, `windows`, `wasm`, `mcu`, `rtos`, `browser`, `mobile` |
 | `style:`   | `oop`, `functional`, `data-oriented`, `actor`, `event-driven` |
 
