@@ -16,16 +16,18 @@ Asset creation pipelines, scene assembly, materials/shaders for offline renderin
 |---|---|
 | Blender (modeling, geometry nodes, Python add-ons, EEVEE / Cycles) | [`blender/SKILL.md`](./blender/SKILL.md) |
 | Houdini (procedural, VEX, HDAs, Solaris/USD, Karma, simulations) | [`houdini/SKILL.md`](./houdini/SKILL.md) |
+| 3D Gaussian Splatting viewer, FSR super-resolution, splat streaming or compositing | [`3dgs/SKILL.md`](./3dgs/SKILL.md) |
 | Maya, 3ds Max, Cinema 4D, Modo, ZBrush, Substance | _add a new subdomain — see [`../EXTENDING.md`](../EXTENDING.md)_ |
 
 ## Facet vocabulary
 
 | Axis | Allowed values |
 |---|---|
-| `lang:`     | `python`, `vex`, `mel`, `osl`, `hlsl`, `glsl` |
+| `lang:`     | `python`, `vex`, `mel`, `osl`, `hlsl`, `glsl`, `ts`, `wgsl` |
 | `renderer:` | `cycles`, `eevee`, `karma`, `arnold`, `redshift`, `vray`, `renderman` |
-| `format:`   | `usd`, `alembic`, `fbx`, `gltf`, `obj` |
+| `format:`   | `usd`, `alembic`, `fbx`, `gltf`, `obj`, `splat` |
 | `pipeline:` | `solo`, `studio`, `vfx`, `archviz`, `product` |
+| `target:`   | `browser` |
 
 ## Shared resources
 
