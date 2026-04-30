@@ -16,16 +16,18 @@ Engine-specific scripting, rendering features, asset pipelines, gameplay framewo
 |---|---|
 | Unity (C#, MonoBehaviour, ScriptableObject, URP/HDRP, Addressables) | [`unity/SKILL.md`](./unity/SKILL.md) |
 | Unreal Engine (C++/Blueprints, UE5, Niagara, Lumen, Nanite) | [`unreal/SKILL.md`](./unreal/SKILL.md) |
+| Synthetic-data generation (Unity Perception, Unreal MRQ, Omniverse Replicator) for ML training | [`synthetic-data/SKILL.md`](./synthetic-data/SKILL.md) |
 | Godot, Bevy, custom engine | _add a new subdomain — see [`../EXTENDING.md`](../EXTENDING.md)_ |
 
 ## Facet vocabulary
 
 | Axis | Allowed values |
 |---|---|
-| `lang:`     | `csharp`, `cpp`, `blueprint`, `gdscript`, `rust` |
-| `target:`   | `pc`, `console`, `mobile`, `vr`, `xr`, `web` |
-| `pipeline:` | `urp`, `hdrp`, `builtin`, `lumen`, `nanite` |
-| `genre:`    | `fps`, `rpg`, `puzzle`, `simulation`, `multiplayer` |
+| `lang:`     | `csharp`, `cpp`, `blueprint`, `gdscript`, `rust`, `python` |
+| `target:`   | `pc`, `console`, `mobile`, `vr`, `xr`, `web`, `gpu` |
+| `pipeline:` | `urp`, `hdrp`, `builtin`, `lumen`, `nanite`, `perception`, `replicator` |
+| `genre:`    | `fps`, `rpg`, `puzzle`, `simulation`, `multiplayer`, `synthetic-data` |
+| `vendor:`   | `unity`, `unreal`, `nvidia-omniverse` |
 
 ## Shared resources
 
