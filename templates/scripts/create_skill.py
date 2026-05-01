@@ -10,7 +10,7 @@ Usage
 -----
     python .agent/tools/create_skill.py \\
         --name      "sort_3dgs_splats" \\
-        --description "3DGS Splatデータを深度でソートする" \\
+        --description "Sort 3DGS Splat data by view-space depth" \\
         --code_file  "temp_sort.ts" \\
         [--domain    "3dcg"] \\
         [--subdomain "3dgs"] \\

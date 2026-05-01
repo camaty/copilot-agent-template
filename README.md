@@ -223,7 +223,7 @@ Run `refactor_skills.py` as a nightly cron job or a scheduled GitHub Actions wor
 
 Overnight, `refactor_skills.py` merges any redundant skills that accumulated during the day, so tomorrow's agent starts with a cleaner, more orthogonal knowledge base.
 
-
+## Schema reference
 
 See [`schema/project-profile.md`](./schema/project-profile.md) for the full list of extraction targets. You can edit the generated `AGENTS.md` to tune what the agents know.
 
