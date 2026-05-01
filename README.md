@@ -46,7 +46,9 @@ This template replicates the three-layer autonomous pattern used by [claw-code](
   │   └── post-tool-use.json         # Optional audit log after tool calls
   ├── scripts/
   │   ├── guard-dangerous-command.sh
-  │   └── run-project-checks.sh      # Optional POSIX helpers when sh is available
+  │   ├── run-project-checks.sh          # Optional POSIX helpers when sh is available
+  │   ├── create_skill.py                # Meta-tool: agent creates a new skill at runtime
+  │   └── refactor_skills.py             # Nightly refactoring: detect and merge overlapping skills
   └── skills/
     └── <domain>/
       ├── SKILL.md
@@ -169,6 +171,57 @@ Key templates:
 - `templates/workflows/copilot-autoassign.template.yml` — event trigger: label issue → Copilot opens PR (generated when GitHub Actions detected)
 - `templates/AGENTS.template.md` — project constraints and file map (always generated)
 - `templates/copilot-instructions.template.md` — always-on Copilot instructions
+
+## Agent meta-tools: autonomous skill creation and nightly refactoring
+
+Two Python scripts in `templates/scripts/` let an agent **grow its own skill library at runtime** — inspired by the [Voyager](https://voyager.minedojo.org/) self-improving agent architecture.
+
+### `create_skill.py` — distil a solved task into a reusable skill
+
+After an agent successfully completes a task it had not seen before, it calls this script to preserve the winning logic as a new `SKILL.md`:
+
+```sh
+python .agent/tools/create_skill.py \
+    --name        "sort_3dgs_splats" \
+    --description "Sort 3DGS Splat data by view-space depth" \
+    --code_file   "temp_sort.ts" \
+    --domain      "3dcg" \
+    --subdomain   "3dgs" \
+    --facets      "lang:typescript,target:browser" \
+    --skills_dir  ".agent/skills"
+```
+
+The script writes `<skills_dir>/<domain>/<subdomain>/SKILL.md`, creates a domain `INDEX.md` if none exists, and appends a new example block if the file already exists.
+
+### `refactor_skills.py` — nightly consolidation of overlapping skills
+
+This script implements the **Nightly Refactoring** phase: it scans all accumulated `SKILL.md` files, detects overlapping or redundant skills via token-level similarity, and (with `--merge`) writes consolidated draft files for human review.
+
+```sh
+# Dry-run: report overlaps without writing anything
+python .agent/tools/refactor_skills.py --skills_dir .agent/skills
+
+# Merge: write consolidated stubs for all overlapping pairs
+python .agent/tools/refactor_skills.py --skills_dir .agent/skills --merge
+
+# Tune the similarity threshold (default 0.5)
+python .agent/tools/refactor_skills.py --min_similarity 0.65 --merge
+```
+
+Merged drafts land in `<skills_dir>/_merged/`. Each draft lists its source files and leaves `## Canon`, `## Recommended patterns`, and `## Pitfalls` sections for the agent (or a human reviewer) to fill in before deleting the originals.
+
+Run `refactor_skills.py` as a nightly cron job or a scheduled GitHub Actions workflow to keep the knowledge base compact and non-redundant.
+
+### OJT loop (the full four-phase cycle)
+
+| Phase | What happens |
+|---|---|
+| **1 Attempt** | Agent queries the skills DB, tries the task with existing knowledge |
+| **2 Explore & Search** | On failure, agent calls `web_search`, reads docs, updates code |
+| **3 Verify** | Agent runs tests; repeats Phase 2 until all assertions pass |
+| **4 Distil & Store** | Agent calls `create_skill.py` to save the successful implementation |
+
+Overnight, `refactor_skills.py` merges any redundant skills that accumulated during the day, so tomorrow's agent starts with a cleaner, more orthogonal knowledge base.
 
 ## Schema reference
 

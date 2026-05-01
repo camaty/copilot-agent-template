@@ -108,6 +108,15 @@ version: 0.1.0
 
 Keep a single SKILL.md ≤ 2,000 tokens. Move depth into siblings (`canon.md`, `patterns.md`, `pitfalls.md`, `checklist.md`, `examples/`).
 
+## Runtime skill creation (meta-tools)
+
+Skills can also be created **at runtime** by an agent as it learns new techniques — no human scaffolding required. Two scripts in `../../templates/scripts/` support this:
+
+- **`create_skill.py`** — called by the agent after successfully solving a novel task. Writes a `SKILL.md` stub (with the winning code embedded) into `<skills_dir>/<domain>/<subdomain>/`.
+- **`refactor_skills.py`** — run nightly (cron or GitHub Actions schedule). Scans all accumulated `SKILL.md` files, detects overlapping skills by token similarity, and optionally writes consolidated draft files for review.
+
+See the [Agent meta-tools section of the root README](../../README.md#agent-meta-tools-autonomous-skill-creation-and-nightly-refactoring) for full usage examples and the four-phase OJT loop they support.
+
 ## Extending
 
 See [`EXTENDING.md`](./EXTENDING.md).
