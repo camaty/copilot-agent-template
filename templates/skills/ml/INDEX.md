@@ -20,14 +20,15 @@ Data preparation, model architecture and training, evaluation methodology, hyper
 | Vision-language reasoning over a 3D scene (point cloud / 3DGS), scene-graph extraction, autonomous re-arrangement | [`vlm-spatial/SKILL.md`](./vlm-spatial/SKILL.md) |
 | Fine-tuning LLMs (LoRA, QLoRA, full FT), instruction tuning, preference optimisation (DPO, ORPO, RLHF) | [`llm-finetuning/SKILL.md`](./llm-finetuning/SKILL.md) |
 | Diffusion / flow-matching models (image, video, audio): training, schedulers, ControlNet, LoRA, step distillation | [`diffusion/SKILL.md`](./diffusion/SKILL.md) |
+| On-device / edge deployment: ONNX Runtime, TFLite, Core ML, ExecuTorch, NPU/DSP delegates, int8/int4 quantisation | [`edge-inference/SKILL.md`](./edge-inference/SKILL.md) |
 | End-to-end MLOps / pipelines spanning both | start with `training`, then read `inference` |
 
 ## Facet vocabulary
 
 | Axis | Allowed values |
 |---|---|
-| `lang:`        | `python` |
-| `framework:`   | `pytorch`, `tensorflow`, `jax`, `sklearn`, `xgboost`, `huggingface` |
+| `lang:`        | `python`, `cpp`, `swift`, `kotlin` |
+| `framework:`   | `pytorch`, `tensorflow`, `jax`, `sklearn`, `xgboost`, `huggingface`, `onnx` |
 | `task:`        | `cv`, `nlp`, `llm`, `tabular`, `rl`, `multimodal`, `tts`, `asr` |
 | `target:`      | `gpu`, `cpu`, `tpu`, `mobile`, `edge`, `browser-wasm` |
 | `precision:`   | `fp32`, `fp16`, `bf16`, `int8`, `int4` |

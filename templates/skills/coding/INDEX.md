@@ -26,6 +26,9 @@ Pick the first matching row.
 | Designing public/internal HTTP/REST/gRPC APIs, OpenAPI/Protobuf schemas, versioning, pagination, idempotency | [`api-design/SKILL.md`](./api-design/SKILL.md) |
 | Logs, metrics, traces, OpenTelemetry, SLI/SLO/error budgets, dashboards as code | [`observability/SKILL.md`](./observability/SKILL.md) |
 | Schema design, migrations, indexes, transactions, query plans across SQL / document / vector stores | [`databases/SKILL.md`](./databases/SKILL.md) |
+| WebXR / OpenXR sessions, reference spaces, controller / hand input, anchors, hit testing, frame-pacing budgets | [`xr/SKILL.md`](./xr/SKILL.md) |
+| HRTF / binaural rendering, ambisonics (FOA / HOA), Web Audio graphs, AudioWorklet DSP, room reverb | [`spatial-audio/SKILL.md`](./spatial-audio/SKILL.md) |
+| ROS 2 nodes, DDS QoS, tf2 / URDF, Nav2 / MoveIt 2 / ros2_control, Gazebo or Isaac Sim integration | [`robotics/SKILL.md`](./robotics/SKILL.md) |
 | _none of the above_ | apply [`_shared/`](./_shared/) only and proceed with general practice |
 
 Add a new subdomain only when its canon and pitfall set diverge meaningfully from the above. See [`../EXTENDING.md`](../EXTENDING.md).
@@ -35,9 +38,9 @@ Add a new subdomain only when its canon and pitfall set diverge meaningfully fro
 | Axis | Allowed values |
 |---|---|
 | `lang:`    | `python`, `typescript`, `javascript`, `rust`, `go`, `c`, `cpp`, `java`, `kotlin`, `swift`, `ruby`, `csharp`, `shell`, `glsl`, `wgsl` |
-| `target:`  | `linux`, `macos`, `windows`, `wasm`, `mcu`, `rtos`, `browser`, `mobile`, `gpu`, `network` |
+| `target:`  | `linux`, `macos`, `windows`, `wasm`, `mcu`, `rtos`, `browser`, `mobile`, `gpu`, `network`, `embedded`, `headset` |
 | `style:`   | `oop`, `functional`, `data-oriented`, `actor`, `event-driven` |
-| `vendor:`  | `openai`, `qwen`, `anthropic`, `mistral`, `github-advanced-security`, `aspera`, `opentelemetry`, `prometheus`, `grafana`, `postgres` |
+| `vendor:`  | `openai`, `qwen`, `anthropic`, `mistral`, `github-advanced-security`, `aspera`, `opentelemetry`, `prometheus`, `grafana`, `postgres`, `khronos`, `webaudio`, `ros2`, `nvidia` |
 
 ## Shared resources
 

@@ -8,7 +8,7 @@
 > @Setup generate-skills 1 3 7          # generate skills #1, #3, and #7
 > @Setup generate-skills 1-5            # generate skills #1 through #5
 > @Setup generate-skills cluster:2      # generate all skills in cluster 2
-> @Setup generate-skills all            # generate all 20 skills
+> @Setup generate-skills all            # generate all 24 skills
 > ```
 >
 > The agent reads this catalog, resolves each ID to its `target_path`, `domain`, `subdomain`, and `facets`, then scaffolds the files using `_layout/SUBDOMAIN_SKILL.template.md` (for subdomains) or `_layout/DOMAIN_INDEX.template.md` (for new domain index files).
@@ -670,6 +670,167 @@ update_files:
 
 ---
 
+## Cluster 10 — Immersive XR & Spatial Interaction
+
+Skills covering WebXR / OpenXR runtime work and spatial audio (HRTF / ambisonics) — the human-facing sensory loop of a generative spatial system.
+
+| ID | Name | Target path | Domain | Subdomain | Key facets |
+|----|------|-------------|--------|-----------|------------|
+| 21 | Immersive XR (WebXR / OpenXR) | `coding/xr/SKILL.md` | `coding` | `xr` | `lang:typescript`, `lang:cpp`, `target:browser`, `target:headset`, `vendor:khronos` |
+| 22 | Spatial audio (HRTF / ambisonics / Web Audio) | `coding/spatial-audio/SKILL.md` | `coding` | `spatial-audio` | `lang:typescript`, `lang:cpp`, `target:browser`, `target:headset`, `vendor:webaudio` |
+
+### ID 21 — Immersive XR (WebXR / OpenXR)
+
+```yaml
+id: 21
+target_path: coding/xr/SKILL.md
+domain: coding
+subdomain: xr
+facets:
+  - lang:typescript
+  - lang:javascript
+  - lang:cpp
+  - lang:csharp
+  - target:browser
+  - target:headset
+  - target:mobile
+  - vendor:khronos
+applies_when:
+  any_of:
+    - "task targets a WebXR `immersive-vr` or `immersive-ar` session"
+    - "task uses the OpenXR loader, layers, or runtime extensions"
+    - "task wires controller / hand-tracking input, reference spaces, or world anchors"
+    - "task implements hit testing, plane detection, depth, or passthrough"
+    - "task profiles motion-to-photon latency and reprojection"
+description: >
+  Patterns for WebXR and OpenXR session lifecycle, reference spaces, input
+  sources (controllers, hand tracking via action sets / interaction profiles),
+  composition layers, anchors, hit testing, foveated rendering, and the
+  motion-to-photon budget that gates comfort.
+new_files:
+  - coding/xr/SKILL.md
+update_files:
+  - coding/INDEX.md        # add row for xr subdomain
+```
+
+### ID 22 — Spatial audio (HRTF / ambisonics / Web Audio)
+
+```yaml
+id: 22
+target_path: coding/spatial-audio/SKILL.md
+domain: coding
+subdomain: spatial-audio
+facets:
+  - lang:typescript
+  - lang:javascript
+  - lang:cpp
+  - lang:rust
+  - target:browser
+  - target:headset
+  - target:mobile
+  - vendor:webaudio
+applies_when:
+  any_of:
+    - "task spatialises sources with HRTF / binaural rendering for headphones"
+    - "task encodes, rotates, or decodes ambisonic (FOA / HOA) audio"
+    - "task implements Web Audio graphs, AudioWorklet DSP, or convolution reverb"
+    - "task ports Steam Audio / Resonance Audio / Oculus Audio pipelines"
+description: >
+  Spatial audio engineering for XR and games: HRTF binaural rendering,
+  ambisonic (Ambix / ACN-SN3D) bus topology, head-pose rotation, partitioned
+  convolution reverb, occlusion / obstruction modelling, AudioWorklet
+  scheduling, and end-to-end latency budgeting.
+new_files:
+  - coding/spatial-audio/SKILL.md
+update_files:
+  - coding/INDEX.md        # add row for spatial-audio subdomain
+```
+
+---
+
+## Cluster 11 — Robotics & On-Device AI
+
+Skills covering ROS 2 robotics middleware and the on-device inference runtimes (ONNX Runtime, TFLite, Core ML, ExecuTorch) that close the perception → action loop on real hardware.
+
+| ID | Name | Target path | Domain | Subdomain | Key facets |
+|----|------|-------------|--------|-----------|------------|
+| 23 | ROS 2 robotics middleware | `coding/robotics/SKILL.md` | `coding` | `robotics` | `lang:python`, `lang:cpp`, `target:linux`, `vendor:ros2`, `vendor:nvidia` |
+| 24 | Edge / on-device inference | `ml/edge-inference/SKILL.md` | `ml` | `edge-inference` | `lang:python`, `lang:cpp`, `framework:onnx`, `target:mobile`, `target:edge`, `precision:int8`, `precision:int4` |
+
+### ID 23 — ROS 2 robotics middleware
+
+```yaml
+id: 23
+target_path: coding/robotics/SKILL.md
+domain: coding
+subdomain: robotics
+facets:
+  - lang:python
+  - lang:cpp
+  - lang:rust
+  - target:linux
+  - target:embedded
+  - vendor:ros2
+  - vendor:nvidia
+applies_when:
+  any_of:
+    - "task writes ROS 2 nodes (rclcpp / rclpy / ros2_rust)"
+    - "task tunes DDS QoS, RMW selection, or discovery for a real robot"
+    - "task wires tf2 frames, URDF / Xacro / SDF, or robot_state_publisher"
+    - "task uses Nav2, MoveIt 2, or ros2_control"
+    - "task simulates a robot in Gazebo (gz-sim) or NVIDIA Isaac Sim"
+description: >
+  ROS 2 middleware patterns: node / topic / service / action design,
+  DDS QoS profiles, lifecycle nodes, composition, callback-group safety,
+  tf2 transform discipline, Nav2 and MoveIt 2 stacks, ros2_control real-time
+  loops, and Gazebo / Isaac Sim integration with deterministic replay.
+new_files:
+  - coding/robotics/SKILL.md
+update_files:
+  - coding/INDEX.md        # add row for robotics subdomain
+```
+
+### ID 24 — Edge / on-device inference
+
+```yaml
+id: 24
+target_path: ml/edge-inference/SKILL.md
+domain: ml
+subdomain: edge-inference
+facets:
+  - lang:python
+  - lang:cpp
+  - lang:swift
+  - lang:kotlin
+  - framework:pytorch
+  - framework:tensorflow
+  - framework:onnx
+  - target:mobile
+  - target:edge
+  - target:cpu
+  - target:gpu
+  - precision:int8
+  - precision:int4
+  - precision:fp16
+applies_when:
+  any_of:
+    - "task ships an ML model to a phone, browser, microcontroller, or embedded SoC"
+    - "task converts a PyTorch / TF / JAX model to ONNX, TFLite, Core ML, or ExecuTorch"
+    - "task quantises (int8, int4) or compiles a model for an NPU / DSP / GPU delegate"
+    - "task tunes inference latency, memory, or thermal envelope on-device"
+description: >
+  On-device inference: runtime selection (ONNX Runtime, TFLite / LiteRT,
+  Core ML, ExecuTorch), delegate / EP matrices (NNAPI, CoreML, Hexagon, GPU,
+  XNNPACK), PTQ vs QAT quantisation, graph optimisation, numeric parity
+  checks, cold-start budgeting, and thermal-soak benchmarking.
+new_files:
+  - ml/edge-inference/SKILL.md
+update_files:
+  - ml/INDEX.md            # add row for edge-inference subdomain
+```
+
+---
+
 ## Quick-reference table
 
 | ID | Cluster | Subdomain | Target path |
@@ -694,6 +855,10 @@ update_files:
 | 18 | 8 — Generative Models | diffusion | `ml/diffusion/SKILL.md` |
 | 19 | 7 — Pipeline & OSS CAD/CG | freecad-scripting | `cad/freecad-scripting/SKILL.md` |
 | 20 | 9 — OSS Game Engine | godot | `gameengine/godot/SKILL.md` |
+| 21 | 10 — Immersive XR | xr | `coding/xr/SKILL.md` |
+| 22 | 10 — Immersive XR | spatial-audio | `coding/spatial-audio/SKILL.md` |
+| 23 | 11 — Robotics & Edge AI | robotics | `coding/robotics/SKILL.md` |
+| 24 | 11 — Robotics & Edge AI | edge-inference | `ml/edge-inference/SKILL.md` |
 
 ## Scaffold commands (agent reference)
 

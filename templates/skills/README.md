@@ -41,7 +41,10 @@ templates/skills/
 │   ├── agent-sca/SKILL.md
 │   ├── api-design/SKILL.md
 │   ├── observability/SKILL.md
-│   └── databases/SKILL.md
+│   ├── databases/SKILL.md
+│   ├── xr/SKILL.md
+│   ├── spatial-audio/SKILL.md
+│   └── robotics/SKILL.md
 ├── 3dcg/                           # 3D CG / DCC tools
 │   ├── INDEX.md
 │   ├── blender/SKILL.md
@@ -62,7 +65,8 @@ templates/skills/
 │   ├── motion-fm/SKILL.md
 │   ├── vlm-spatial/SKILL.md
 │   ├── llm-finetuning/SKILL.md
-│   └── diffusion/SKILL.md
+│   ├── diffusion/SKILL.md
+│   └── edge-inference/SKILL.md
 └── gameengine/                     # real-time CG / game engines
     ├── INDEX.md
     ├── unity/SKILL.md
@@ -110,10 +114,10 @@ See [`EXTENDING.md`](./EXTENDING.md).
 
 ## Skill catalog (Generative Spatial Computing)
 
-[`SKILL_CATALOG.md`](./SKILL_CATALOG.md) lists 20 catalogued skills across nine clusters — the original five priority clusters (web graphics, AI/CAD, digital humans, secure infra, embodied AI) plus four follow-on clusters covering cross-cutting service foundations (API design, observability, databases), pipeline & open-source CAD/CG (OpenUSD, FreeCAD), generative-model specialisations (LLM fine-tuning, diffusion), and an open-source game engine (Godot). Each entry has a numeric ID; pass any subset to `@Setup generate-skills` to scaffold them in parallel:
+[`SKILL_CATALOG.md`](./SKILL_CATALOG.md) lists 24 catalogued skills across eleven clusters — the original five priority clusters (web graphics, AI/CAD, digital humans, secure infra, embodied AI) plus six follow-on clusters covering cross-cutting service foundations (API design, observability, databases), pipeline & open-source CAD/CG (OpenUSD, FreeCAD), generative-model specialisations (LLM fine-tuning, diffusion), an open-source game engine (Godot), immersive XR & spatial interaction (WebXR/OpenXR, spatial audio), and robotics & on-device AI (ROS 2, edge inference). Each entry has a numeric ID; pass any subset to `@Setup generate-skills` to scaffold them in parallel:
 
 ```
 @Setup generate-skills 1 2 3          # generate skills #1, #2, and #3
 @Setup generate-skills cluster:1      # generate all skills in cluster 1
-@Setup generate-skills all            # generate all 20 skills
+@Setup generate-skills all            # generate all 24 skills
 ```
