@@ -1,0 +1,10 @@
+{
+  "github.copilot.advanced": {
+    "model": "{{DEFAULT_MODEL}}"
+  },
+  "chat.agent.enabled": true,
+  "chat.agentHandoff": true,
+  "chat.promptFilesRecommendations": true,
+  "chat.useCustomizationsInParentRepositories": true,
+  "chat.skillsLocations": {{SKILLS_LOCATIONS}}
+}

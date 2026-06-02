@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "LaneState",
+  "description": "Serialized pipeline state passed between agent phases (Trajectory Reduction). Contains only the minimal structured state needed by the next phase — no natural-language conversation history.",
+  "type": "object",
+  "required": ["phase", "task", "relevant_files", "completed_steps", "next_action"],
+  "properties": {
+    "phase": {
+      "type": "string",
+      "enum": ["triage", "explore", "plan", "implement", "verify", "review"],
+      "description": "The phase that just completed."
+    },
+    "task": {
+      "type": "string",
+      "description": "Original task title (one sentence)."
+    },
+    "task_source": {
+      "type": "string",
+      "enum": ["vscode", "browser", "issue", "prompt"],
+      "description": "Surface from which the task originated."
+    },
+    "triage_level": {
+      "type": "integer",
+      "enum": [1, 2, 3],
+      "description": "1=lightweight fix, 2=standard feature, 3=architecture/high-risk change."
+    },
+    "relevant_files": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Paths of source files relevant to the task (populated by explore phase)."
+    },
+    "changed_files": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Paths of files modified so far (populated by implement phase)."
+    },
+    "completed_steps": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Human-readable labels of plan steps already completed."
+    },
+    "next_action": {
+      "type": "string",
+      "description": "One-sentence description of what the next phase should do first."
+    },
+    "acceptance_criteria": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Checklist items extracted from the issue or task description."
+    },
+    "retry_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of verify→implement retry cycles consumed so far."
+    },
+    "error_fingerprints": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Hashes of errors seen during verify. If the same fingerprint appears twice, the circuit breaker fires."
+    },
+    "plan_steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "file", "description"],
+        "properties": {
+          "id": { "type": "integer" },
+          "file": { "type": "string" },
+          "description": { "type": "string" },
+          "verify_command": { "type": "string" }
+        }
+      },
+      "description": "Structured plan steps (populated by plan phase, consumed by implement phase)."
+    }
+  },
+  "additionalProperties": false
+}

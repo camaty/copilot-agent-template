@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ReflexionReport",
+  "description": "Structured self-diagnosis output emitted by the Verification agent when a check fails. The Implementer agent reads this to perform a targeted Point-to-Point fix instead of a free-form retry.",
+  "type": "object",
+  "required": ["error_type", "error_fingerprint", "root_cause", "affected_files", "fix_plan"],
+  "properties": {
+    "error_type": {
+      "type": "string",
+      "enum": ["lint", "build", "test", "security", "runtime"],
+      "description": "Category of failure."
+    },
+    "error_fingerprint": {
+      "type": "string",
+      "description": "Stable hash of error_type + first error message. Used for circuit-breaker deduplication. Format: '<error_type>:<sha1_of_first_error_line>'."
+    },
+    "root_cause": {
+      "type": "string",
+      "description": "One-sentence explanation of WHY the error occurred."
+    },
+    "affected_files": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["path", "issue"],
+        "properties": {
+          "path": { "type": "string", "description": "Relative file path." },
+          "line": { "type": "integer", "description": "Approximate line number if known." },
+          "issue": { "type": "string", "description": "What is wrong at this location." }
+        },
+        "additionalProperties": false
+      },
+      "description": "Files that must be changed to fix the error."
+    },
+    "fix_plan": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["file", "search", "replace"],
+        "properties": {
+          "file": { "type": "string", "description": "Relative file path to edit." },
+          "search": {
+            "type": "string",
+            "description": "Exact string to find (verbatim, unique within the file). MUST exist in the current file."
+          },
+          "replace": {
+            "type": "string",
+            "description": "Replacement string. May be empty string to delete."
+          },
+          "rationale": { "type": "string", "description": "Why this specific change fixes the error." }
+        },
+        "additionalProperties": false
+      },
+      "description": "Ordered list of Point-to-Point edits the Implementer must apply verbatim."
+    },
+    "safe_to_retry": {
+      "type": "boolean",
+      "description": "false if the fix_plan cannot guarantee convergence (e.g., missing dependency, external API down). When false, the autonomous agent should escalate to the human instead of retrying."
+    }
+  },
+  "additionalProperties": false
+}

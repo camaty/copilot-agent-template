@@ -1,0 +1,278 @@
+# Event-driven autonomous trigger for {{PROJECT_NAME}}
+#
+# Semantic Routing pipeline:
+#
+#   1. Job: triage
+#      Keyword-based classifier (no LLM cost) assigns Level 1/2/3 to the issue.
+#      - Level 1: lightweight fix (typo, rename, format) → skips explore if file named
+#      - Level 2: standard feature/bugfix → full pipeline
+#      - Level 3: architectural change → adds `needs-human-gate` label and blocks
+#        until a human adds `{{COPILOT_LABEL}}-approved`
+#
+#   2. Job: human-gate (Level 3 only)
+#      Waits for the `{{COPILOT_LABEL}}-approved` label before proceeding.
+#      Without this gate, Level 3 tasks would burn expensive model tokens on
+#      tasks that may need architectural redesign before any code is written.
+#
+#   3. Job: assign-to-copilot
+#      Assigns the issue to the Copilot coding agent with triage metadata
+#      attached as a comment, so the autonomous agent reads the triage level
+#      and adjusts its model tier accordingly.
+#
+# Triage classification uses keyword matching — zero LLM calls, zero token cost.
+# The LaneState schema and ReflexionReport schema live in .github/schema/.
+
+name: "Copilot Semantic Routing"
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  issues: write
+
+jobs:
+  # ─── Job 1: Triage ──────────────────────────────────────────────────────────
+  triage:
+    if: github.event.label.name == '{{COPILOT_LABEL}}'
+    runs-on: ubuntu-latest
+    outputs:
+      level: ${{ steps.classify.outputs.level }}
+      rationale: ${{ steps.classify.outputs.rationale }}
+      skip_phases: ${{ steps.classify.outputs.skip_phases }}
+    steps:
+      - name: Classify task complexity
+        id: classify
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = context.payload.issue.title.toLowerCase();
+            const body  = (context.payload.issue.body || '').toLowerCase();
+            const text  = title + ' ' + body;
+
+            // Level 3 signals: architectural, high-blast-radius changes
+            const level3Keywords = [
+              'architecture', 'architectural', 'migration', 'migrate',
+              'breaking change', 'breaking-change', 'database schema',
+              'auth rewrite', 'rewrite auth', 'mass refactor', 'refactor entire',
+              'remove feature', 'drop support', 'api redesign', 'redesign api',
+              'security audit', 'compliance', 'upgrade major version',
+            ];
+
+            // Level 1 signals: trivial, single-location changes
+            const level1Keywords = [
+              'typo', 'fix typo', 'spelling', 'rename', 'update readme',
+              'fix comment', 'bump version', 'format', 'lint fix', 'whitespace',
+              'missing semicolon', 'trailing comma', 'update dependency',
+            ];
+
+            let level = 2;        // default: standard
+            let rationale = 'Standard feature or bugfix.';
+            let skipPhases = '[]';
+            const riskFactors = [];
+
+            for (const kw of level3Keywords) {
+              if (text.includes(kw)) {
+                riskFactors.push(kw);
+              }
+            }
+
+            if (riskFactors.length > 0) {
+              level = 3;
+              rationale = `Architectural/high-risk task detected. Risk factors: ${riskFactors.join(', ')}.`;
+            } else {
+              let trivialMatches = 0;
+              for (const kw of level1Keywords) {
+                if (text.includes(kw)) trivialMatches++;
+              }
+              if (trivialMatches >= 1) {
+                level = 1;
+                rationale = 'Lightweight task (typo/rename/format).';
+                // If a specific file is mentioned in the title, explore can be skipped
+                const filePattern = /`[^`]+\.[a-zA-Z]{1,6}`/;
+                if (filePattern.test(title)) {
+                  skipPhases = '["explore"]';
+                }
+              }
+            }
+
+            core.setOutput('level', String(level));
+            core.setOutput('rationale', rationale);
+            core.setOutput('skip_phases', skipPhases);
+            core.info(`Triage result: Level ${level} — ${rationale}`);
+
+      - name: Apply triage label
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const level = '${{ steps.classify.outputs.level }}';
+            const labelMap = { '1': 'triage/level-1', '2': 'triage/level-2', '3': 'triage/level-3' };
+            const label = labelMap[level];
+
+            // Ensure label exists (create if missing)
+            try {
+              await github.rest.issues.getLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: label,
+              });
+            } catch {
+              const colorMap = { 'triage/level-1': '0075ca', 'triage/level-2': 'e4e669', 'triage/level-3': 'd93f0b' };
+              await github.rest.issues.createLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: label,
+                color: colorMap[label],
+              });
+            }
+
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: [label],
+            });
+
+      - name: Post Level 3 gate comment and add blocking label
+        if: steps.classify.outputs.level == '3'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Add a blocking label so the assign job won't proceed
+            try {
+              await github.rest.issues.getLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: 'needs-human-gate',
+              });
+            } catch {
+              await github.rest.issues.createLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: 'needs-human-gate',
+                color: 'b60205',
+              });
+            }
+
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: ['needs-human-gate'],
+            });
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: [
+                '⚠️ **Triage: Level 3 — Architectural task detected.**',
+                '',
+                '${{ steps.classify.outputs.rationale }}',
+                '',
+                'This task has a high blast radius. Before the autonomous agent starts, a human must review the scope and add the label **`{{COPILOT_LABEL}}-approved`** to this issue.',
+                '',
+                'The agent pipeline is paused until that label is added.',
+                '',
+                '**Risk factors detected:** ${{ steps.classify.outputs.rationale }}',
+              ].join('\n'),
+            });
+
+  # ─── Job 2: Assign to Copilot ────────────────────────────────────────────────
+  assign-to-copilot:
+    needs: triage
+    # Skip Level 3 tasks — they require a separate human-approved trigger
+    if: needs.triage.outputs.level != '3'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assign issue to Copilot
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const level      = '${{ needs.triage.outputs.level }}';
+            const rationale  = '${{ needs.triage.outputs.rationale }}';
+            const skipPhases = '${{ needs.triage.outputs.skip_phases }}';
+
+            const modelTier = level === '1' ? 'lightweight (all phases)' :
+                              level === '2' ? 'lightweight (explore/verify), standard (plan/implement)' :
+                              'standard (explore/verify), advanced (plan/implement)';
+
+            // Assign the issue to the Copilot bot user
+            await github.rest.issues.addAssignees({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              assignees: ['copilot'],
+            });
+
+            // Post context comment with triage metadata for the autonomous agent
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: [
+                '🤖 **Copilot is on it.**',
+                '',
+                `**Triage level: ${level}** — ${rationale}`,
+                `**Model tier:** ${modelTier}`,
+                `**Phases to skip:** ${skipPhases === '[]' ? 'none' : skipPhases}`,
+                '',
+                '```json',
+                JSON.stringify({
+                  triage_level: parseInt(level),
+                  rationale: rationale,
+                  skip_phases: JSON.parse(skipPhases),
+                  recommended_model: level === '1' ? 'lightweight' : level === '2' ? 'standard' : 'advanced',
+                  requires_human_gate: false,
+                }, null, 2),
+                '```',
+                '',
+                'The autonomous agent will:',
+                '1. Read the triage JSON above and adjust model tier',
+                '2. Explore the relevant code',
+                '3. Create an implementation plan',
+                '4. Implement using Point-to-Point edits only (no whole-file rewrites)',
+                '5. Verify (lint + build + tests) with Reflexion-guided self-correction',
+                '6. Open a PR with a full change summary',
+                '',
+                'If a hard blocker or circuit-breaker fires, a follow-up comment will describe what needs human input.',
+              ].join('\n'),
+            });
+
+  # ─── Job 3: Level 3 approved trigger ─────────────────────────────────────────
+  assign-approved-level3:
+    if: github.event.label.name == '{{COPILOT_LABEL}}-approved'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assign approved Level 3 task to Copilot
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.addAssignees({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              assignees: ['copilot'],
+            });
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: [
+                '✅ **Human gate cleared. Copilot is starting the Level 3 pipeline.**',
+                '',
+                '```json',
+                JSON.stringify({
+                  triage_level: 3,
+                  rationale: 'Human-approved architectural task.',
+                  skip_phases: [],
+                  recommended_model: 'advanced',
+                  requires_human_gate: false,
+                }, null, 2),
+                '```',
+                '',
+                'The agent will use the advanced model tier for plan and implement phases.',
+                'A PR will be opened with a full change summary for your review.',
+              ].join('\n'),
+            });
