@@ -54,24 +54,24 @@ update_files:
 ```yaml
 id: 02
 domain: 3dcg
-subdomain: 3dgs
+subdomain: scene-stream
 facets:
   - lang:ts
   - lang:wgsl
-  - format:splat
+  - format:scene
   - target:browser
 applies_when:
   any_of:
-    - "task streams or renders 3D Gaussian Splatting scenes"
-    - "task applies AMD FSR or similar upscaling to a 3DGS viewport"
-    - "task composites splat data with rasterised geometry"
-    - "task edits or filters Gaussian splat data at runtime"
+    - "task streams or renders 3D scene captures"
+    - "task applies image upscaling to a scene viewport"
+    - "task composites scene data with rasterised geometry"
+    - "task edits or filters scene capture data at runtime"
 description: >
-  applying FSR-based super-resolution, and compositing splats with standard
-  mesh geometry. Covers tile-based loading, sort passes, and splat editing.
+  applying image upscaling, and compositing scene captures with standard
+  mesh geometry. Covers tile-based loading, sort passes, and scene editing.
 new_files:
 update_files:
-  - 3dcg/INDEX.md          # add row for 3dgs subdomain
+  - 3dcg/INDEX.md          # add row for scene-stream subdomain
 ```
 
 ### ID 03 — Shader-resident volumetric simulation
@@ -206,17 +206,16 @@ id: 07
 domain: ml
 facets:
   - lang:python
-  - format:bvh
-  - format:vrm
+  - format:anim
+  - format:rig
 applies_when:
   any_of:
     - "task extracts skeletal kinematics from a monocular RGB video"
-    - "task generates or retargets BVH animation data"
-    - "task applies motion data to VRM or similar avatar formats"
+    - "task generates or retargets animation data"
+    - "task applies motion data to avatar rigs"
 description: >
   that extract per-frame skeletal kinematics from a single RGB video, output
-  high-fidelity BVH animation clips, and retarget them to VRM or other
-  standard avatar rigs.
+  high-fidelity animation clips, and retarget them to standard avatar rigs.
 new_files:
 update_files:
 ```
@@ -230,12 +229,13 @@ facets:
   - target:avatar
 applies_when:
   any_of:
-    - "task generates 3D garment geometry from a flat design or image"
+    - "task generates 3D apparel geometry from a flat design or image"
     - "task simulates cloth drape on an avatar with physics"
     - "task fits clothing to a parametric body model"
 description: >
-  Pipeline to convert 2D garment designs or photographs into avatar-ready 3D
-  based dynamics) to produce natural drape and collision responses.
+  Pipeline to convert 2D apparel designs or photographs into avatar-ready 3D
+  clothing meshes and apply physics-based dynamics to produce natural drape
+  and collision responses.
 new_files:
 update_files:
 ```
@@ -257,10 +257,10 @@ domain: coding
 facets:
   - lang:python
   - target:network
-  - vendor:aspera
+  - vendor:transfer
 applies_when:
   any_of:
-    - "task transfers large 3DGS scenes, point clouds, or training datasets between hosts"
+    - "task transfers large scene captures, point clouds, or training datasets between hosts"
     - "task builds a sync pipeline for multi-GB 3D binary assets"
 description: >
   point clouds, ML training sets) between team members or cloud storage using
@@ -305,7 +305,7 @@ Skills covering Unity/UE simulation environments and VLM-driven spatial understa
 | ID | Name | Target path | Domain | Subdomain | Key facets |
 |----|------|-------------|--------|-----------|------------|
 | 11 | Unity/UE synthetic data environments | `gameengine/synthetic-data/SKILL.md` | `gameengine` | `synthetic-data` | `vendor:unity`, `vendor:unreal`, `lang:python`, `lang:csharp` |
-| 12 | VLM spatial understanding | `ml/vlm-spatial/SKILL.md` | `ml` | `vlm-spatial` | `lang:python`, `format:splat`, `format:pcd` |
+| 12 | Scene spatial understanding | `ml/scene-spatial/SKILL.md` | `ml` | `scene-spatial` | `lang:python`, `format:scene`, `format:pcd` |
 
 ### ID 11 — Unity/UE synthetic data environments
 
@@ -339,26 +339,26 @@ update_files:
 
 ```yaml
 id: 12
-target_path: ml/vlm-spatial/SKILL.md
+target_path: ml/scene-spatial/SKILL.md
 domain: ml
-subdomain: vlm-spatial
+subdomain: scene-spatial
 facets:
   - lang:python
-  - format:splat
+  - format:scene
   - format:pcd
 applies_when:
   any_of:
-    - "task uses a vision-language model to interpret a 3D scene (point cloud or 3DGS)"
+    - "task uses a vision-language model to interpret a 3D scene (point cloud or mesh)"
     - "task autonomously edits or re-arranges objects in a real scanned space"
     - "task queries semantic layout of a 3D environment using natural language"
 description: >
-  Integration patterns for feeding 3D scan data (point clouds, 3DGS captures)
+  Integration patterns for feeding 3D scan data (point clouds, mesh captures)
   to VLMs (GPT-4o vision, LLaVA, etc.), extracting semantic object layout, and
   driving autonomous re-arrangement or annotation of real-world scanned spaces.
 new_files:
-  - ml/vlm-spatial/SKILL.md
+  - ml/scene-spatial/SKILL.md
 update_files:
-  - ml/INDEX.md            # add row for vlm-spatial subdomain
+  - ml/INDEX.md            # add row for scene-spatial subdomain
 ```
 
 ---

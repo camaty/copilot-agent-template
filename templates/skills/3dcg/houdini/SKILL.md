@@ -165,7 +165,7 @@ usdchecker --strict shot.usd        # USD validation
 
 - [`../blender/SKILL.md`](../blender/SKILL.md) — for upstream/
   downstream interop with Blender content.
-  cloth for production-grade garment work.
+  cloth for production-grade apparel work.
 - [`../usd-pipeline/SKILL.md`](../usd-pipeline/SKILL.md) — broader
   USD authoring patterns.
 - SideFX docs: VEX language reference, Solaris/LOPs guide, PDG/TOPs.

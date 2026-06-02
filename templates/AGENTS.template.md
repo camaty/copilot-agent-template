@@ -25,15 +25,14 @@
 
 ## Clawable Workflow
 
-All Copilot agent work flows through five lanes in order. Every agent emits a structured lane event before and after each phase:
+All Copilot agent work flows through four lanes in order. Every agent emits a structured lane event before and after each phase:
 
-| Lane | Agent | Emits |
-|------|-------|-------|
-| explore | `@Explore` | `▶/✓ [LANE:explore]` |
-| plan | `@Plan` | `▶/✓ [LANE:plan]` |
-| implement | `@Implementer` | `▶/✓ [LANE:implement:step:{N}]` |
-| verify | `@Verification` | `▶/✓ [LANE:verify:{command}]` |
-| review | `@Reviewer` | `▶/✓ [LANE:review]` |
+| Lane      | Agent           | Emits                           |
+| --------- | --------------- | ------------------------------- |
+| explore   | `@Explore`      | `▶/✓ [LANE:explore]`            |
+| plan      | `@Plan`         | `▶/✓ [LANE:plan]`               |
+| implement | `@Implementer`  | `▶/✓ [LANE:implement:step:{N}]` |
+| verify    | `@Verification` | `▶/✓ [LANE:verify:{command}]`   |
 
 Use `@{{AUTONOMOUS_AGENT_NAME}}` to run the full pipeline autonomously. Use individual agents for targeted work.
 

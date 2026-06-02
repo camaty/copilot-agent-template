@@ -9,11 +9,11 @@ future reasoning loops can call upon it directly.
 Usage
 -----
     python .agent/tools/create_skill.py \\
-        --name      "sort_3dgs_splats" \\
-        --description "Sort 3DGS Splat data by view-space depth" \\
+        --name      "sort_scene_stream" \\
+        --description "Sort scene data by view-space depth" \\
         --code_file  "temp_sort.ts" \\
         [--domain    "3dcg"] \\
-        [--subdomain "3dgs"] \\
+        [--subdomain "scene-stream"] \\
         [--facets    "lang:typescript,target:browser"] \\
         [--skills_dir ".agent/skills"]
 
@@ -194,7 +194,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument(
         "--name", required=True,
-        help="Stable identifier for the skill, e.g. 'sort_3dgs_splats'."
+        help="Stable identifier for the skill, e.g. 'sort_scene_stream'."
     )
     parser.add_argument(
         "--description", required=True,
@@ -210,7 +210,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument(
         "--subdomain", default=None,
-        help="Subdomain folder name (e.g. '3dgs'). Inferred from --name if omitted."
+        help="Subdomain folder name (e.g. 'scene-stream'). Inferred from --name if omitted."
     )
     parser.add_argument(
         "--facets", default="",

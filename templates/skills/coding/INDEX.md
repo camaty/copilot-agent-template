@@ -39,7 +39,7 @@ Add a new subdomain only when its canon and pitfall set diverge meaningfully fro
 | `lang:`    | `python`, `typescript`, `javascript`, `rust`, `go`, `c`, `cpp`, `java`, `kotlin`, `swift`, `ruby`, `csharp`, `shell`, `glsl`, `wgsl` |
 | `target:`  | `linux`, `macos`, `windows`, `wasm`, `mcu`, `rtos`, `browser`, `mobile`, `gpu`, `network`, `embedded`, `headset` |
 | `style:`   | `oop`, `functional`, `data-oriented`, `actor`, `event-driven` |
-| `vendor:`  | `openai`, `qwen`, `anthropic`, `mistral`, `github-advanced-security`, `aspera`, `opentelemetry`, `prometheus`, `grafana`, `postgres`, `khronos`, `webaudio`, `ros2`, `nvidia` |
+| `vendor:`  | `openai`, `qwen`, `anthropic`, `mistral`, `github-advanced-security`, `opentelemetry`, `prometheus`, `grafana`, `postgres`, `khronos`, `webaudio`, `ros2`, `nvidia` |
 
 ## Shared resources
 

@@ -31,7 +31,7 @@ If the task does not match the activation hints above, return to [`../INDEX.md`]
 - **Time-step (Δt) parameterisation** — the simulation's physical time advance per frame; must be kept ≤ the CFL stability limit (Δt ≤ Δx / c_max) to avoid numerical blow-up.
 - **CFL condition** — Courant–Friedrichs–Lewy stability criterion; the wave or advection signal must not travel more than one grid cell per time-step.
 - **Boundary conditions** — rules applied at the grid edge: Dirichlet (fixed value), Neumann (zero gradient / reflective), or absorbing (sponge layer).
-- **Splat / kernel** — a weight function (Gaussian, cubic spline) used when scattering or gathering particle contributions onto a grid.
+- **Kernel / weight function** — a weight function (Gaussian, cubic spline) used when scattering or gathering particle contributions onto a grid.
 - **Volumetric ray-march** — per-pixel integration of a 3-D scalar field (density, temperature) along a view ray to produce a 2-D image.
 
 For terminology shared across the whole `coding` domain, see [`../_shared/canon.md`](../_shared/canon.md).

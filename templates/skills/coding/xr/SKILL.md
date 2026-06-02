@@ -28,8 +28,8 @@ version: 0.1.0
 Open this skill when the deliverable runs *inside* a head-mounted or
 handheld XR session and is bound by the strict frame-pacing rules of
 WebXR or OpenXR. For browser GPU work that is *not* in an XR session,
-use [`../webgpu/SKILL.md`](../webgpu/SKILL.md). For 3D Gaussian
-Splatting payloads streamed into an XR viewer, compose this skill
+use [`../webgpu/SKILL.md`](../webgpu/SKILL.md). For streamed 3D payloads
+in an XR viewer, compose this skill
 
 If activation hints don't match, return to [`../INDEX.md`](../INDEX.md).
 
@@ -212,7 +212,7 @@ ovrgpuprofiler --capture frame --count 240  # frame-time + reprojection
 
 - [`../webgpu/SKILL.md`](../webgpu/SKILL.md) — for the GPU
   pipeline running inside `XRWebGLLayer` / native swapchains.
-  splat datasets composited into an XR session.
+  streamed datasets composited into an XR session.
 - [`../spatial-audio/SKILL.md`](../spatial-audio/SKILL.md) — for
   HRTF / ambisonic audio aligned to the head pose.
 - WebXR Device API — <https://www.w3.org/TR/webxr/>

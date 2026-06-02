@@ -3,11 +3,17 @@
   "title": "LaneState",
   "description": "Serialized pipeline state passed between agent phases (Trajectory Reduction). Contains only the minimal structured state needed by the next phase — no natural-language conversation history.",
   "type": "object",
-  "required": ["phase", "task", "relevant_files", "completed_steps", "next_action"],
+  "required": [
+    "phase",
+    "task",
+    "relevant_files",
+    "completed_steps",
+    "next_action"
+  ],
   "properties": {
     "phase": {
       "type": "string",
-      "enum": ["triage", "explore", "plan", "implement", "verify", "review"],
+      "enum": ["explore", "plan", "implement", "verify"],
       "description": "The phase that just completed."
     },
     "task": {
@@ -18,11 +24,6 @@
       "type": "string",
       "enum": ["vscode", "browser", "issue", "prompt"],
       "description": "Surface from which the task originated."
-    },
-    "triage_level": {
-      "type": "integer",
-      "enum": [1, 2, 3],
-      "description": "1=lightweight fix, 2=standard feature, 3=architecture/high-risk change."
     },
     "relevant_files": {
       "type": "array",
